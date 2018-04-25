@@ -19,7 +19,7 @@ exports.updatePrice = ((product) => {
 		product.ask = +data.asks[orderBookDepth][0];;
 		product.askQty = +data.asks[orderBookDepth][1];
 		product.timestamp = data.timestamp;
-		// console.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
+		console.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
 		return product.save();
 	}).catch((err) => {
 		console.log(`Error getting ${product.ticker} on ${product.exchangeName}: ${err.toString()}`);
@@ -76,7 +76,7 @@ exports.reconcile = (type) => {
 }
 
 exports.updateBalances = (() => {
-	if (key && key == "<API Key>") {
+	if (!key || key == "<API Key>") {
 		console.log('No Kraken API Key. Ignoring balances.');
 	} else {
 		var kraken = new KrakenAPI(key, secret);

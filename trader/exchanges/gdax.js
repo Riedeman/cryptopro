@@ -24,7 +24,7 @@ exports.updatePrice = ((product) => {
 		product.bidQty = +data.bids[orderBookDepth][1];
 		product.ask = +data.asks[orderBookDepth][0];;
 		product.askQty = +data.asks[orderBookDepth][1];
-		// console.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
+		console.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
 		return product.save();
 	}).catch((err) => {
 		console.log(`Error getting ${product.ticker} on ${product.exchangeName}: ${err.toString()}`);
@@ -54,7 +54,7 @@ exports.sell = ((recID, ticker, qty, price) => {
 });
 
 exports.updateBalances = (() => {
-	if (key && key == "<API Key>") {
+	if (!key || key == "<API Key>") {
 		console.log('No GDAX API Key. Ignoring balances.');
 	} else {
 		var authedClient = new Gdax.AuthenticatedClient(

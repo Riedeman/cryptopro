@@ -16,6 +16,12 @@ if (config.makeRealTrades) {
 	console.log("-----");
 }
 
+if (config.capturePotential) {
+	console.log("-----");
+	console.log("MISSING POTENTIAL WILL BE CAPTURED")
+	console.log("-----");
+}
+
 console.log(`${moment().format("H:mm:ss.SS")} Let's go!`)
 Balances.updateAllBalances();
 
@@ -24,12 +30,12 @@ var ticker = setInterval(runTicker, 3000);
 
 function runTicker() {
 	loop++;
-	console.log(`${moment().format("H:mm:ss.SS")} =>  ${loop.toString().padEnd(loop.toString().length + loop%10, '.')}`);
+	console.log(`${moment().format("H:mm:ss.SS")} =>  Price check ${loop.toString().padEnd(loop.toString().length + loop%10, '.')}`);
 	if (config.makeRealTrades) {
 		if (loop % 100 == 0) { // Update balances regularly to catch any activity
 			Balances.updateAllBalances();
 		}
-		if (config.enableReorders && loop % 300 == 3) {  // Reopen any flagged orders
+		if (config.enableReorders && loop % 300 == 3) { // Reopen any flagged orders
 			Reorder.reorder();
 		}
 		if (loop % 300 == 5) { // Reconcile buys occasionally

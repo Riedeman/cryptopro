@@ -19,7 +19,7 @@ exports.updatePrice = (product) => {
 		product.ask = +data.asks[orderBookDepth].price;
 		product.askQty = +data.asks[orderBookDepth].amount;
 		product.timestamp = data.bids[orderBookDepth].timestamp;
-		// console.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
+		console.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
 		return product.save();
 	}).catch((err) => {
 		console.log(`Error getting ${product.ticker} on ${product.exchangeName}: ${err.toString()}`);
@@ -27,7 +27,7 @@ exports.updatePrice = (product) => {
 };
 
 exports.updateBalances = () => {
-	if (key && key == "<API Key>") {
+	if (!key || key == "<API Key>") {
 		console.log('No Gemini API Key. Ignoring balances.');
 	} else {
 		var restClient = new GeminiAPI({
