@@ -1,0 +1,37 @@
+{
+	"capturePotential": true,
+	"makeRealTrades": false,
+	"enableReorders": false,
+	"database": {
+		"username": "cryptouser",
+		"password": "changeTHISpassword",
+		"database": "cryptopro",
+		"host": "127.0.0.1",
+		"logging": false,
+		"options": {
+			"timezone": "America/New_York"
+		},
+		"dialect": "mysql"
+	},
+	"Bitstamp": {
+		"key": "<API Key>",
+		"secret": "<secret>",
+		"custID": "custID",
+		"orderBookDepth": 0
+	},
+	"GDAX": {
+		"key": "<API Key>",
+		"secret": "<secret>",
+		"passphrase": "<passphrase>",
+		"orderBookDepth": 0
+	},
+	"Gemini": {
+		"key": "<API Key>",
+		"secret": "<secret>"
+	},
+	"Kraken": {
+		"key": "<API Key>",
+		"secret": "<secret>",
+		"orderBookDepth": 0
+	}
+}
