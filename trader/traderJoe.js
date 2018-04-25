@@ -1,0 +1,125 @@
+var moment = require('moment');
+var Sequelize = require('../app/models/sequelize.js');
+var Balance = require('../app/models/sequelize.js').Balance;
+var Market = require('../app/models/sequelize.js').Market;
+var Product = require('../app/models/sequelize.js').Product;
+var Recommendation = require('../app/models/sequelize.js').Recommendation;
+var Bitstamp = require('./exchanges/bitstamp.js');
+var GDAX = require('./exchanges/gdax.js');
+var Gemini = require('./exchanges/gemini.js');
+var Kraken = require('./exchanges/kraken.js');
+const config = require('../config/config.json');
+
+exports.updateAll = () => {
+	Market.findAll().then((markets) => {
+		markets.map((market) => {
+			if (market.tradeActive) { //1 = On, 0 = Off
+				Product.findAll({
+					where: {
+						marketID: market.id
+					}
+				}).then((products) => {
+					if (products.length >= 2) {
+						var allPriceChecks = products.map((product) => {
+							var ex = getExchange(product.exchangeName);
+							if (ex) {
+								return ex.updatePrice(product);
+							} else {
+								return null;
+							}
+						});
+						Promise.all(allPriceChecks).then((res) => { //All prices for this market have now been updated
+							makeRecommendation(market);
+						});
+					}
+				});
+			}
+		});
+	});
+	return "Rock on";
+}
+
+function makeRecommendation(market) {
+	Sequelize.sequelize.query(`CALL make_recommendation(${market.id});`).spread((data) => {
+		if (data) {
+			if (config.makeRealTrades) {
+				sell(data);
+				buy(data);
+			}
+			console.log(`${moment().format("H:mm:ss.SS")} ${data.marketName} : Qty: ${data.actualTradeableQty}  Cost:  ${data.expectedBuyCost}, Fees: ${data.expectedBuyFee + data.expectedSellFee}, Expected Profit: ${data.expectedProfit}`);
+			console.log(`Buy for: ${data.buyPrice} on ${data.buyExchangeName}`);
+			console.log(`Sell at: ${data.sellPrice} on ${data.sellExchangeName}`);
+			console.log("-----");
+			updateAssumedBalances(data); //Reconciling is too slow if it's action time. Added risk, but makes multi-exchange loops more lucrative
+			return data;
+		} else {
+			// No profitable trade available. Capture any missed opportunity for data mining.
+			if (config.capturePotential) {
+				Sequelize.sequelize.query(`CALL capture_potential(${market.id});`).spread((data) => {
+					if (data) {
+						console.log(`Missed potential captured: ${data.buyExchangeName} / ${data.sellExchangeName}: ${data.marketName}`);
+						console.log(`Cost:  ${data.potentialBuyCost}, Expected Profit: ${data.potentialProfit}`);
+						console.log("-----");
+					}
+				}).error((err) => {
+					console.log(err);
+				});
+			}
+		}
+	}).error((err) => {
+		console.log(err);
+	});
+}
+
+exports.buy = (rec) => {
+	buy(rec);
+} 
+
+function buy(rec) {
+	var ex = getExchange(rec.buyExchangeName);
+	ex.buy(rec.id, rec.buyTicker, rec.actualTradeableQty, rec.buyPrice);
+}
+
+exports.sell = (rec) => {
+	sell(rec);
+} 
+
+function sell(rec) {
+	var ex = getExchange(rec.sellExchangeName);
+	ex.sell(rec.id, rec.sellTicker, rec.actualTradeableQty, rec.sellPrice);
+}
+
+function getExchange(name) {
+	switch (name) {
+		case 'GDAX':
+			return GDAX;
+		case 'Kraken':
+			return Kraken;
+		case 'Bitstamp':
+			return Bitstamp;
+		case 'Gemini':
+			return Gemini;
+	}
+}
+
+function updateAssumedBalances(recommendation) {
+	//Adjust sell exchange base currency
+	var query = `update Balances set available = available - ${recommendation.actualTradeableQty} 
+		where exchangeID = ${recommendation.sellExchangeID} and currency = '${recommendation.sellCurrency}'`;
+	Balance.sequelize.query(query);
+
+	//Adjust sell exchange market currency & fees
+	query = `update Balances set available = available + ${recommendation.expectedSellCost}  - ${recommendation.expectedSellFee}
+		where exchangeID = ${recommendation.sellExchangeID} and currency = '${recommendation.buyCurrency}'`;
+	Balance.sequelize.query(query);
+
+	//Adjust buy exchange base currency
+	query = `update Balances set available = available + ${recommendation.actualTradeableQty}
+		where exchangeID = ${recommendation.buyExchangeID} and currency = '${recommendation.sellCurrency}'`;
+	Balance.sequelize.query(query);
+
+	//Adjust buy exchange market currency & fees
+	query = `update Balances set available = available - ${recommendation.expectedBuyCost} - ${recommendation.expectedBuyFee}
+		where exchangeID = ${recommendation.buyExchangeID} and currency = '${recommendation.buyCurrency}'`;
+	Balance.sequelize.query(query);
+}
