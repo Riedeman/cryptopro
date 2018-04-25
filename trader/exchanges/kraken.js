@@ -18,11 +18,12 @@ exports.updatePrice = ((product) => {
 		product.bidQty = +data.bids[orderBookDepth][1];
 		product.ask = +data.asks[orderBookDepth][0];;
 		product.askQty = +data.asks[orderBookDepth][1];
-		product.timestamp = data.timestamp;
-		console.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
-		return product.save();
+		product.timestamp = data.bids[orderBookDepth][2]
+		return product.save().then((saved) => {
+			AccountInfo.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
+		});
 	}).catch((err) => {
-		console.log(`Error getting ${product.ticker} on ${product.exchangeName}: ${err.toString()}`);
+		AccountInfo.log(`Error getting ${product.ticker} on ${product.exchangeName}: ${err.toString()}`);
 	});
 });
 
@@ -40,7 +41,6 @@ exports.buy = ((recID, ticker, qty, price) => {
 			AccountInfo.saveResultTransaction(recID, 'buy', `ERROR: ${err}`);
 			AccountInfo.zeroBalances('Kraken');
 		} else {
-			console.log("RESULT from Kraken:", res);
 			AccountInfo.saveResultTransaction(recID, 'buy', res.result.txid);
 		}
 	});
@@ -60,7 +60,6 @@ exports.sell = ((recID, ticker, qty, price) => {
 			AccountInfo.saveResultTransaction(recID, 'sell', `ERROR: ${err}`);
 			AccountInfo.zeroBalances('Kraken');
 		} else {
-			console.log("RESULT from Kraken:", res);
 			AccountInfo.saveResultTransaction(recID, 'sell', res.result.txid);
 		}
 	});

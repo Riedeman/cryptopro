@@ -2,6 +2,7 @@
 	"capturePotential": true,
 	"makeRealTrades": false,
 	"enableReorders": false,
+	"verbose": true,
 	"database": {
 		"username": "cryptotrader",
 		"password": "changeTHISpassword",

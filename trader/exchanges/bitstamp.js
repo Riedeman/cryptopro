@@ -22,10 +22,11 @@ exports.updatePrice = ((product) => {
 		product.ask = +data.asks[orderBookDepth][0];;
 		product.askQty = +data.asks[orderBookDepth][1];
 		product.timestamp = data.timestamp;
-		console.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
-		return product.save();
+		return product.save().then((saved) => {
+			AccountInfo.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
+		});
 	}).catch((err) => {
-		console.log(`Error getting ${product.ticker} on ${product.exchangeName}: ${err.toString()}`);
+		AccountInfo.log(`Error getting ${product.ticker} on ${product.exchangeName}: ${err.toString()}`);
 	});
 });
 
@@ -95,7 +96,7 @@ function getReconciledTrades(recommendations) {
 		};
 		makeRequest('post', host, path, querystring.stringify(data), doReconcile, 0, '');
 	} else {
-		console.log("No Bitstamp orders waiting for reconcile.");
+		AccountInfo.log("No Bitstamp orders waiting for reconcile.");
 	}
 }
 
@@ -185,7 +186,6 @@ function makeRequest(method, host, path, data, callback, recID, type) {
 			console.log(`No Response for ${path}`, err);
 		});
 		res.on('end', () => {
-			console.log("Got back", res.statusMessage);
 			if (res.statusCode == 200) {
 				callback(JSON.parse(buffer), recID, type);
 			}

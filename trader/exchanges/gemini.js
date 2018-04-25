@@ -19,10 +19,11 @@ exports.updatePrice = (product) => {
 		product.ask = +data.asks[orderBookDepth].price;
 		product.askQty = +data.asks[orderBookDepth].amount;
 		product.timestamp = data.bids[orderBookDepth].timestamp;
-		console.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
-		return product.save();
+		return product.save().then((saved) => {
+			AccountInfo.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
+		});
 	}).catch((err) => {
-		console.log(`Error getting ${product.ticker} on ${product.exchangeName}: ${err.toString()}`);
+		AccountInfo.log(`Error getting ${product.ticker} on ${product.exchangeName}: ${err.toString()}`);
 	});
 };
 

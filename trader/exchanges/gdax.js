@@ -8,7 +8,7 @@ const config = require('../../config/config.json')["GDAX"];
 const key = config.key;
 const secret = config.secret;
 const passphrase = config.passphrase;
-const orderBookDepth = config.orderBookDepth || 0;
+const orderBookDepth = config.orderBookDepth || 0; //NOT SUPPORTED FOR GDAX
 
 const apiURI = 'https://api.gdax.com';
 var exchange = new Exchanges.gdax({
@@ -24,10 +24,12 @@ exports.updatePrice = ((product) => {
 		product.bidQty = +data.bids[orderBookDepth][1];
 		product.ask = +data.asks[orderBookDepth][0];;
 		product.askQty = +data.asks[orderBookDepth][1];
-		console.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
-		return product.save();
+		product.timestamp = data.sequence;
+		return product.save().then((saved) => {
+			AccountInfo.log(`Saved ${product.ticker} on ${product.exchangeName} for ${product.ask} / ${product.bid}`);
+		});
 	}).catch((err) => {
-		console.log(`Error getting ${product.ticker} on ${product.exchangeName}: ${err.toString()}`);
+		AccountInfo.log(`Error getting ${product.ticker} on ${product.exchangeName}: ${err.toString()}`);
 	});
 });
 
@@ -114,7 +116,7 @@ function reconcileSells() {
 					apiURI
 				);
 				authedClient.getOrder(recommendation.sellTransactionID, (error, response, order) => {
-					console.log("GOT sell BACK:", order);
+					AccountInfo.log("GOT sell BACK:", order);
 					if (order.status == "done") {
 						AccountInfo.reconcileOrder("GDAX", order.id, Math.abs(parseFloat(order.executed_value)), parseFloat(order.fill_fees));
 					}
@@ -141,7 +143,7 @@ function reconcileBuys() {
 					apiURI
 				);
 				authedClient.getOrder(recommendation.buyTransactionID, (error, response, order) => {
-					console.log("GOT buy BACK:", order);
+					AccountInfo.log("GOT buy BACK:", order);
 					if (order && order.status == "done") {
 						AccountInfo.reconcileOrder("GDAX", order.id, Math.abs(parseFloat(order.executed_value)), parseFloat(order.fill_fees));
 					}

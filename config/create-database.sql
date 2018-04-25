@@ -51,7 +51,7 @@ CREATE TABLE `Products` (
   `exchangeName` varchar(255) DEFAULT NULL,
   `ticker` varchar(255) DEFAULT NULL,
   `baseFee` float DEFAULT NULL,
-  `timestamp` int(11) DEFAULT NULL,
+  `timestamp` BIGINT DEFAULT NULL,
   `bid` float DEFAULT NULL,
   `bidQty` float DEFAULT NULL,
   `ask` float DEFAULT NULL,
@@ -173,6 +173,20 @@ CREATE TABLE `Users` (
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/* Deny outdated prices */ ;
+DELIMITER ;;
+CREATE TRIGGER denyOldPrices BEFORE UPDATE ON Products
+FOR EACH ROW
+BEGIN
+DECLARE msg varchar(255);
+IF NEW.timestamp < OLD.timestamp THEN
+  SET msg = CONCAT("Ignoring outdated price for ",NEW.marketName,". New ", NEW.bid, " @ ",NEW.timestamp,", OLD ",OLD.bid, " @ ", OLD.timestamp);
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+END IF;
+END;
+;;
+DELIMITER ;
 
 /* Capture Potential Procedure */ ;
 DELIMITER ;;

@@ -4,6 +4,13 @@ var Recommendation = require('../app/models/sequelize.js').Recommendation;
 var moment = require('moment');
 var lastNonce = new Date().getTime();
 var nonceIncrement = 0;
+const config = require('../config/config.json');
+
+exports.log = (txt) => {
+	if (config.verbose) {
+		console.log(txt);
+	}
+}
 
 exports.reconcileOrder = (exchangeName, orderID, cost, fee) => {
 	console.log(`Reconciling order ${exchangeName} ${orderID} cost ${cost}, fee ${fee}`);
