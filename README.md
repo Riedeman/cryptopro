@@ -1,5 +1,3 @@
-* [License](#license)
-
 # Cryptopro
 
 ### Introduction
@@ -89,7 +87,7 @@ Configuration settings that do not affect the profitability of a trade are store
 
 - **capturePotential**  *(true)*: When true, it will check for any potential arbitrage opportunity, regardless of available balances and insert the details into the Potentials table. Note: This can be several thousand records a month, so manage storage space and/or clear out the data regularly.
 - **makeRealTrades** *(false)*: **WARNING**: When true, will attempt to place buy/sell orders when profitable recommendations are made.
-- **enableReorders** *(false)*: **WARNING**: When true, will attempt to replace any order marked for rebuy/resell (Recommendations.endResult). Useful for re-opening failed or cancelled sides of a trade.
+- **enableReorders** *(false)*: **WARNING**: When true, will attempt to replace any order marked for rebuy/resell (Recommendations.endResult). Useful for re-opening failed or canceled sides of a trade.
 - **verbose** *(true)*: Just a simple flag to toggle logging of price updates/errors. It can get a little chatty.
 - **database**: MySQL connection settings *(values from create-database.sql script)*
 - **API credentials**  *(blank)*: Each exchange has a credentials section for their specific authentication criteria with at least an API Key and a Secret that you can get from their respective API settings pages. API Keys should always have only the minimum permissions necessary.  For Pseudo mode, the API Key you create will only need access to account balances. For Trading Mode, the API Key will also need to submit Limit Buy/Sell orders and get order histories to try to reconcile past trades. API Keys used by Cryptopro do not need and should not be given any permissions to withdraw/deposit/liquidate, place market orders or perform any wallet functions. Obviously keep your keys secure, always with the most minimal permissions, and make new ones if you think they've ever been compromised.
@@ -129,7 +127,7 @@ The OCD level works by making the data in your Cryptopro database available via 
 2.  Run `node showMeTheMoney` to make your data available via a REST API
 3.  Make your REST API available via HTTP/HTTPS so your device can access it
 4.  Purchase ($19.99), install, and run the Cryptopro app
-5.  In the Settings tab under Connect to My Data, enter the URL for your API and the API key you created in the User record in Step 1
+5.  In the Settings screen under Connect to My Data, enter the URL for your API and the API key you created in the User record in Step 1
 6.  Use the app to watch your balances, trades, and all the action whenever you want
 
 ### To run the API:
