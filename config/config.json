@@ -3,7 +3,7 @@
 	"makeRealTrades": false,
 	"enableReorders": false,
 	"database": {
-		"username": "cryptouser",
+		"username": "cryptotrader",
 		"password": "changeTHISpassword",
 		"database": "cryptopro",
 		"host": "127.0.0.1",

@@ -547,3 +547,5 @@ join Products p on b.exchangeID = p.exchangeID AND b.currency = LEFT(p.marketNam
 
 end ;;
 DELIMITER ;
+
+CREATE USER 'cryptotrader'@'localhost' IDENTIFIED BY 'changeTHISpassword';

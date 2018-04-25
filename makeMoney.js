@@ -1,8 +1,8 @@
 var moment = require('moment');
-var Balances = require('./balances.js');
-var TraderJoe = require('./traderJoe.js');
-var Reorder = require('./reorder.js');
-const config = require('../config/config.json');
+var Balances = require('./trader/balances.js');
+var TraderJoe = require('./trader/traderJoe.js');
+var Reorder = require('./trader/reorder.js');
+const config = require('./config/config.json');
 
 if (config.makeRealTrades) {
 	for (i = 0; i < 3; i++) {
