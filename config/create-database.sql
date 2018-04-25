@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS `cryptopro` ;
 USE `cryptopro`;
 
 CREATE USER 'cryptotrader'@'localhost' IDENTIFIED BY 'changeTHISpassword';
-GRANT ALL PRIVILEGES ON cryptopro.* To 'cryptotrader'@'localhost'
+GRANT ALL PRIVILEGES ON cryptopro.* To 'cryptotrader'@'localhost';
 
 -- ------------------------------------------------------
 DROP TABLE IF EXISTS `Balances`;

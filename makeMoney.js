@@ -5,7 +5,7 @@ var Reorder = require('./trader/reorder.js');
 const config = require('./config/config.json');
 
 if (config.makeRealTrades) {
-	for (i = 0; i < 3; i++) {
+	for (i = 0; i < 5; i++) {
 		console.log("-----");
 		console.log("WARNING : ACTUAL TRADING ENABLED - USE AT YOUR OWN RISK")
 		console.log("-----");
@@ -30,6 +30,7 @@ var ticker = setInterval(runTicker, 3000);
 
 function runTicker() {
 	loop++;
+	console.log("-----");
 	console.log(`${moment().format("H:mm:ss.SS")} =>  Price check ${loop.toString().padEnd(loop.toString().length + loop%10, '.')}`);
 	if (config.makeRealTrades) {
 		if (loop % 100 == 0) { // Update balances regularly to catch any activity
