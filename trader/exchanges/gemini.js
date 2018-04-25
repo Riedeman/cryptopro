@@ -27,19 +27,23 @@ exports.updatePrice = (product) => {
 };
 
 exports.updateBalances = () => {
-	var restClient = new GeminiAPI({
-		key: key,
-		secret: secret,
-		sandbox: false
-	});
-	restClient.getMyAvailableBalances().then((res) => {
-			res.map((balance) => {
-				AccountInfo.saveBalance('Gemini', balance.currency, balance.available);
+	if (key && key == "<API Key>") {
+		console.log('No Gemini API Key. Ignoring balances.');
+	} else {
+		var restClient = new GeminiAPI({
+			key: key,
+			secret: secret,
+			sandbox: false
+		});
+		restClient.getMyAvailableBalances().then((res) => {
+				res.map((balance) => {
+					AccountInfo.saveBalance('Gemini', balance.currency, balance.available);
+				})
 			})
-		})
-		.catch((err) => {
-			console.log("UH OH", err);
-		})
+			.catch((err) => {
+				console.log("UH OH", err);
+			});
+	}
 };
 
 exports.buy = (recID, ticker, qty, price) => {
@@ -137,7 +141,7 @@ function reconcileSells() {
 	Recommendation.findAll({
 		where: {
 			endResult: null,
-				sellExchangeName: exchangeName
+			sellExchangeName: exchangeName
 		},
 	}).then((recommendations) => {
 		if (recommendations && recommendations.length > 0) {

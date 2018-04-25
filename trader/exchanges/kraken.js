@@ -76,55 +76,59 @@ exports.reconcile = (type) => {
 }
 
 exports.updateBalances = (() => {
-	var kraken = new KrakenAPI(key, secret);
-	var exchangeName = 'Kraken';
-	var currencyAdjustments = {
-		'BCH': 0,
-		'XBT': 0,
-		'ETH': 0,
-		'LTC': 0,
-		'USD': 0,
-		'XRP': 0
-	}
-	kraken.api('OpenOrders', null, (err, orders) => {
-		if (err) {
-			console.log("UH OH", err);
-		} else {
-			//Kraken does not subtract open orders from available balances...Not sure what they think "available" means
-			var openOrders = orders.result.open;
-			// console.log('open order is', openOrders);
-			for (var property in openOrders) { // Kraken uses Values as Keys. Also irritating.
-				if (openOrders.hasOwnProperty(property)) {
-					var currency = openOrders[property].descr.pair.substr(0, 3);
-					var type = openOrders[property].descr.type;
-					var vol = openOrders[property].vol;
-					var price = openOrders[property].descr.price;
-					if (type == 'sell') {
-						currencyAdjustments[currency] -= vol;
-					}
-					if (type == 'buy') {
-						currencyAdjustments['USD'] -= (price * vol);
+	if (key && key == "<API Key>") {
+		console.log('No Kraken API Key. Ignoring balances.');
+	} else {
+		var kraken = new KrakenAPI(key, secret);
+		var exchangeName = 'Kraken';
+		var currencyAdjustments = {
+			'BCH': 0,
+			'XBT': 0,
+			'ETH': 0,
+			'LTC': 0,
+			'USD': 0,
+			'XRP': 0
+		}
+		kraken.api('OpenOrders', null, (err, orders) => {
+			if (err) {
+				console.log("UH OH", err);
+			} else {
+				//Kraken does not subtract open orders from available balances...Not sure what they think "available" means
+				var openOrders = orders.result.open;
+				// console.log('open order is', openOrders);
+				for (var property in openOrders) { // Kraken uses Values as Keys. Also irritating.
+					if (openOrders.hasOwnProperty(property)) {
+						var currency = openOrders[property].descr.pair.substr(0, 3);
+						var type = openOrders[property].descr.type;
+						var vol = openOrders[property].vol;
+						var price = openOrders[property].descr.price;
+						if (type == 'sell') {
+							currencyAdjustments[currency] -= vol;
+						}
+						if (type == 'buy') {
+							currencyAdjustments['USD'] -= (price * vol);
+						}
 					}
 				}
+				console.log("Kraken Balance adjustments are: ", currencyAdjustments);
 			}
-			console.log("Kraken Balance adjustments are: ", currencyAdjustments);
-		}
-		kraken = new KrakenAPI(key, secret);
-		kraken.api('Balance', null, (err, balances) => {
-			if (err || !balances) {
-				console.log("DID NOT GET KRAKEN BALANCES", err);
-			} else {
-				console.log("Kraken Balance result:", balances);
-				AccountInfo.saveBalance(exchangeName, "USD", balances.result.ZUSD ? +balances.result.ZUSD + currencyAdjustments["USD"] : 0);
-				AccountInfo.saveBalance(exchangeName, "BCH", balances.result.BCH ? +balances.result.BCH + currencyAdjustments["BCH"] : 0);
-				AccountInfo.saveBalance(exchangeName, "BTC", balances.result.XXBT ? +balances.result.XXBT + currencyAdjustments["XBT"] : 0);
-				AccountInfo.saveBalance(exchangeName, "ETH", balances.result.XETH ? +balances.result.XETH + currencyAdjustments["ETH"] : 0);
-				AccountInfo.saveBalance(exchangeName, "LTC", balances.result.XLTC ? +balances.result.XLTC + currencyAdjustments["LTC"] : 0);
-				AccountInfo.saveBalance(exchangeName, "XRP", balances.result.XXRP ? +balances.result.XXRP + currencyAdjustments["XRP"] : 0);
-			}
-			return;
+			kraken = new KrakenAPI(key, secret);
+			kraken.api('Balance', null, (err, balances) => {
+				if (err || !balances) {
+					console.log("DID NOT GET KRAKEN BALANCES", err);
+				} else {
+					console.log("Kraken Balance result:", balances);
+					AccountInfo.saveBalance(exchangeName, "USD", balances.result.ZUSD ? +balances.result.ZUSD + currencyAdjustments["USD"] : 0);
+					AccountInfo.saveBalance(exchangeName, "BCH", balances.result.BCH ? +balances.result.BCH + currencyAdjustments["BCH"] : 0);
+					AccountInfo.saveBalance(exchangeName, "BTC", balances.result.XXBT ? +balances.result.XXBT + currencyAdjustments["XBT"] : 0);
+					AccountInfo.saveBalance(exchangeName, "ETH", balances.result.XETH ? +balances.result.XETH + currencyAdjustments["ETH"] : 0);
+					AccountInfo.saveBalance(exchangeName, "LTC", balances.result.XLTC ? +balances.result.XLTC + currencyAdjustments["LTC"] : 0);
+					AccountInfo.saveBalance(exchangeName, "XRP", balances.result.XXRP ? +balances.result.XXRP + currencyAdjustments["XRP"] : 0);
+				}
+				return;
+			});
 		});
-	});
+	}
 });
 
 function reconcileBuys() {

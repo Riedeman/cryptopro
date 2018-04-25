@@ -1,5 +1,9 @@
 CREATE DATABASE IF NOT EXISTS `cryptopro` ;
 USE `cryptopro`;
+
+CREATE USER 'cryptotrader'@'localhost' IDENTIFIED BY 'changeTHISpassword';
+GRANT ALL PRIVILEGES ON cryptopro.* To 'cryptotrader'@'localhost'
+
 -- ------------------------------------------------------
 DROP TABLE IF EXISTS `Balances`;
 CREATE TABLE `Balances` (
@@ -176,7 +180,7 @@ CREATE PROCEDURE `capture_potential`(in p_market_id int)
 begin
 declare v_rec_id int unsigned default 0;
 
-INSERT INTO `robotrage`.`Potentials`
+INSERT INTO `Potentials`
 (`marketID`,
 `marketName`,
 `sellExchangeID`,
@@ -296,7 +300,7 @@ CREATE PROCEDURE `make_recommendation`(in p_market_id int)
 begin
 declare v_rec_id int unsigned default 0;
 
-INSERT INTO `robotrage`.`Recommendations`
+INSERT INTO `Recommendations`
 (`marketID`,
 `marketName`,
 `sellExchangeID`,
@@ -547,5 +551,3 @@ join Products p on b.exchangeID = p.exchangeID AND b.currency = LEFT(p.marketNam
 
 end ;;
 DELIMITER ;
-
-CREATE USER 'cryptotrader'@'localhost' IDENTIFIED BY 'changeTHISpassword';

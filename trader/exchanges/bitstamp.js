@@ -54,17 +54,21 @@ function makeTrade(type, recID, ticker, qty, price) {
 }
 
 exports.updateBalancesAndFees = (() => {
-	var nonce = AccountInfo.generateNonce();
-	var message = nonce + custID + key;
-	var hash = crypto.createHmac('sha256', secret).update(message).digest('hex');
-	var signature = hash.toUpperCase();
-	var path = `/api/v2/balance/`;
-	var data = {
-		key: key,
-		signature: signature,
-		nonce: nonce
-	};
-	makeRequest('post', host, path, querystring.stringify(data), saveBalances, 0, '');
+	if (key && key == "<API Key>") {
+		console.log('No Bitstamp API Key. Ignoring balances.');
+	} else {
+		var nonce = AccountInfo.generateNonce();
+		var message = nonce + custID + key;
+		var hash = crypto.createHmac('sha256', secret).update(message).digest('hex');
+		var signature = hash.toUpperCase();
+		var path = `/api/v2/balance/`;
+		var data = {
+			key: key,
+			signature: signature,
+			nonce: nonce
+		};
+		makeRequest('post', host, path, querystring.stringify(data), saveBalances, 0, '');
+	}
 });
 
 exports.reconcile = (type) => {
@@ -178,7 +182,7 @@ function makeRequest(method, host, path, data, callback, recID, type) {
 			buffer += data;
 		});
 		res.on('err', (err) => {
-			console.log("UH OH>>>", err);
+			console.log(`No Response for ${path}`, err);
 		});
 		res.on('end', () => {
 			console.log("Got back", res.statusMessage);

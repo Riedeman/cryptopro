@@ -54,34 +54,38 @@ exports.sell = ((recID, ticker, qty, price) => {
 });
 
 exports.updateBalances = (() => {
-	var authedClient = new Gdax.AuthenticatedClient(
-		key,
-		secret,
-		passphrase,
-		apiURI
-	);
-	authedClient.getAccounts((err, response, data) => {
-		if (err) {
-			console.log(`Error getting balance from GDAX`, err);
-		} else {
-			// console.log("Result data: ", data);
-			let balances = _.reduce(data, (result, acct) => {
-				result[acct.currency] = {
-					balance: parseFloat(acct.balance),
-					available: parseFloat(acct.available),
-					pending: parseFloat(acct.hold)
-				}
-				return result
-			}, {});
-			var exchangeName = 'GDAX';
-			AccountInfo.saveBalance(exchangeName, "BCH", balances.BCH ? balances.BCH.available : 0);
-			AccountInfo.saveBalance(exchangeName, "BTC", balances.BTC ? balances.BTC.available : 0);
-			AccountInfo.saveBalance(exchangeName, "ETH", balances.ETH ? balances.ETH.available : 0);
-			AccountInfo.saveBalance(exchangeName, "LTC", balances.LTC ? balances.LTC.available : 0);
-			AccountInfo.saveBalance(exchangeName, "USD", balances.USD ? balances.USD.available : 0);
-			AccountInfo.saveBalance(exchangeName, "XRP", balances.XRP ? balances.XRP.available : 0);
-		}
-	});
+	if (key && key == "<API Key>") {
+		console.log('No GDAX API Key. Ignoring balances.');
+	} else {
+		var authedClient = new Gdax.AuthenticatedClient(
+			key,
+			secret,
+			passphrase,
+			apiURI
+		);
+		authedClient.getAccounts((err, response, data) => {
+			if (err) {
+				console.log(`Error getting balance from GDAX`, err);
+			} else {
+				// console.log("Result data: ", data);
+				let balances = _.reduce(data, (result, acct) => {
+					result[acct.currency] = {
+						balance: parseFloat(acct.balance),
+						available: parseFloat(acct.available),
+						pending: parseFloat(acct.hold)
+					}
+					return result
+				}, {});
+				var exchangeName = 'GDAX';
+				AccountInfo.saveBalance(exchangeName, "BCH", balances.BCH ? balances.BCH.available : 0);
+				AccountInfo.saveBalance(exchangeName, "BTC", balances.BTC ? balances.BTC.available : 0);
+				AccountInfo.saveBalance(exchangeName, "ETH", balances.ETH ? balances.ETH.available : 0);
+				AccountInfo.saveBalance(exchangeName, "LTC", balances.LTC ? balances.LTC.available : 0);
+				AccountInfo.saveBalance(exchangeName, "USD", balances.USD ? balances.USD.available : 0);
+				AccountInfo.saveBalance(exchangeName, "XRP", balances.XRP ? balances.XRP.available : 0);
+			}
+		});
+	}
 });
 
 exports.reconcile = (type) => {
