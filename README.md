@@ -1,6 +1,8 @@
+* [License](#license)
+
 # Cryptopro
 
-Introduction
+### Introduction
 
 Cryptopro by Arbos is a multi-currency, multi-exchange, multi-level arbitrage trading system.
 
@@ -18,7 +20,7 @@ IF YOU ARE NOT COMFORTABLE WORKING WITH BOTH MYSQL AND NODE.JS YOU SHOULD NOT US
 
 ### Getting Started
 
-There are multiple levels of arbitraging available from Level 1: Spectator Mode to Level 4: OCD. No account information is required to get started. The steps to get up and running are:
+There are multiple levels of arbitraging available from **Level 1: Spectator Mode** to **Level 4: OCD**. No account information is required to get started. The steps to get up and running are:
 
 -   Install dependencies (Node and MySQL)
 -   Create the database and data
@@ -58,10 +60,10 @@ Once the database is configured you should familiarize yourself with the tables 
 
 ### Configure Settings
 
-Settings required to determine the profitability of a trade are stored in the database so calculations can be done quickly and are exchange and currency specific, usually for each exchange/currency pair they are:
+Settings required to determine the profitability of a trade are stored in the database so calculations can be done quickly and are exchange and currency specific, they are:
 
-- **Products.baseFee**: Your fee level for each market/exchange
-- **Balances.reserve**: How much of that currency on that exchange you will set aside before calculating the amount available to trade. Fees are taken from the market currency (USD in the default data) after the trade amount is calculated, so make sure to keep enough in reserve to cover your maximum expected fee, plus whatever you want to keep in reserve on top of that. Your available quantity may also go slightly below the reserve amount due to the differences in rounding between exchanges when trades are made (see below).
+- **Products.baseFee**: Your fee level for each market/exchange. *(0.0025 = 25bps)*
+- **Balances.reserve**: How much of that currency on that exchange you will set aside before calculating the amount available to trade. Your available quantity may go slightly below the reserve amount due to the differences in rounding between exchanges when trades are made (see below).
 - **Balances.exposureRatio**: Once the reserve is subtracted from your available balance, the maximum amount you can trade is your available quantity multiplied by the exposureRatio. 1 = 100%, .5 = 50%, 0 = 0% (no trading).
 - **Balances.liquidityRatio**: To calculate the trade quantity, the minimum available volume for the orderbook bid/ask results is determined and then multiplied by the liquidityRatio. 1 = 100%, .5 = 50%, 0 = 0% (no trading).
 - **Markets.tradeActive**: 1 = yes, 0 = no. Set tradeActive = 0 to shut off price checks and trading for that market.
@@ -75,7 +77,7 @@ The actual tradable quantity is determined in the stored procedure by the lowest
 
 ### Default Stored Procedure Values
 
-The make_recommendation stored procedure is what determines if there are any profitable trades to make and if so, records and returns the most profitable recommendation. Some values are hardcoded in there for speed and because they probably don't need to change once set. Change them at your own risk and for your own needs. They are: minimum profitability set to $0.10, minimum trade size set to $25, and last updated price cut-off threshold set at 2 seconds.  The capture_potential procedure has the same defaults, but can be changed separately from the trading rules for what-if scenarios.
+The make_recommendation stored procedure is what determines if there are any profitable trades to make and if so records and returns the most profitable recommendation. Some values are hardcoded in there for speed and because they probably don't need to change once set. Change them at your own risk and for your own needs. They are: minimum profitability set to $0.10, minimum trade size set to $25, and last updated price cut-off threshold set at 2 seconds.  The capture_potential procedure has the same defaults, but can be changed separately from the trading rules for what-if scenarios.
 
 ### Notes on Rounding and Decimals
 
@@ -83,7 +85,7 @@ Each exchange has their own rounding rules and decimal formats that will affect 
 
 ### Configuration File Settings
 
-Configuration settings that do not affect the profitability of a trade are stored in the config/config.json file and are (defaults in italic):
+Configuration settings that do not affect the profitability of a trade are stored in the config/config.json file and are *(defaults in italic)*:
 
 - **capturePotential**  *(true)*: When true, it will check for any potential arbitrage opportunity, regardless of available balances and insert the details into the Potentials table. Note: This can be several thousand records a month, so manage storage space and/or clear out the data regularly.
 - **makeRealTrades** *(false)*: **WARNING**: When true, will attempt to place buy/sell orders when profitable recommendations are made.
@@ -116,7 +118,7 @@ Trading mode will enable real-money arbitraging across exchanges. Like Pseudo mo
 Configuration settings: Authentication info added to config file, makeRealTrades = true
 To run: `node makeMoney`
 
-### Level 4 - OCD: Obsessive Cryptocurrency Disorder (Expert level only) (Also, not free: $19.99) 
+### Level 4 - OCD: Obsessive Cryptocurrency Disorder (expert level only) (also, not free: $19.99) 
 *(coming soon)*
 
 Since querying database tables and watching a script do nothing most of the time isn't very exciting, ~~there's now~~ there will soon be a way you can play along at home. It makes your data available via an API that you can connect directly to using the Cryptopro app. Regardless of the Level (1-3) of arbitrage you're doing, you can follow along in the app so you'll never have to wonder what's going on.
@@ -132,7 +134,7 @@ The OCD level works by making the data in your Cryptopro database available via 
 
 ### To run the API:
 
-The API is read-only (default port: 8080), but it is still your private data, so take all appropriate precautions to secure it accordingly.  Once launched (`node showMeTheMoney`), you should be able to test it out by doing: `curl -X GET *<your server address>*/api/kpis -H "x-api-key: *<yourapikey*>" -L` with your api key in the header. Firewall configurations and access controls vary among hosting providers, so make sure yours are set appropriately so that the API URL is accessible from the device on which the app is installed. The app should inform you if it is unable to connect with the URL and API key provided.
+The API is read-only (default port: 8080), but it is still your private data, so take all appropriate precautions to secure it accordingly.  Once launched (`node showMeTheMoney`), you should be able to test it out by doing: `curl -X GET <your server>/api/kpis -H "x-api-key: <yourapikey>" -L` with your details. Firewall configurations and access controls vary among hosting providers, so make sure yours are set appropriately so that the API URL is accessible from the device on which the app is installed. The app should inform you if it is unable to connect with the URL and API key provided.
 
 ### Handling Failures
 
