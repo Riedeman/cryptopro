@@ -181,7 +181,7 @@ FOR EACH ROW
 BEGIN
 DECLARE msg varchar(255);
 IF NEW.timestamp < OLD.timestamp THEN
-  SET msg = CONCAT("Ignoring outdated price for ",NEW.marketName,". New ", NEW.bid, " @ ",NEW.timestamp,", OLD ",OLD.bid, " @ ", OLD.timestamp);
+  SET msg = CONCAT("Ignoring outdated price for ",NEW.marketName,". Existing: ",OLD.bid, " @ ", OLD.timestamp,", Attempt: ", NEW.bid, " @ ",NEW.timestamp);
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
 END IF;
 END;

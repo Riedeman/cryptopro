@@ -130,9 +130,11 @@ The OCD level works by making the data in your Cryptopro database available via 
 5.  In the Settings screen under Connect to My Data, enter the URL for your API and the API key you created in the User record in Step 1
 6.  Use the app to watch your balances, trades, and all the action whenever you want
 
-### To run the API:
+### Testing the API:
 
-The API is read-only (default port: 8080), but it is still your private data, so take all appropriate precautions to secure it accordingly.  Once launched (`node showMeTheMoney`), you should be able to test it out by doing: `curl -X GET <your server>/api/kpis -H "x-api-key: <yourapikey>" -L` with your details. Firewall configurations and access controls vary among hosting providers, so make sure yours are set appropriately so that the API URL is accessible from the device on which the app is installed. The app should inform you if it is unable to connect with the URL and API key provided.
+The API is read-only (default port: 8080), but it is still your private data, so take all appropriate precautions to secure it accordingly.  Once launched (`node showMeTheMoney`), you should be able to test it out by doing: 
+`curl -X GET <your server>/api/kpis -H "x-api-key: <userapikey>" -L` 
+with your details. Firewall configurations and access controls vary among hosting providers, so make sure yours are set appropriately so that the API URL is accessible from the device on which the app is installed. The app should inform you if it is unable to connect with the URL and API key provided.
 
 ### Handling Failures
 

@@ -45,8 +45,9 @@ function makeRecommendation(market) {
 			if (config.makeRealTrades) {
 				sell(data);
 				buy(data);
+				console.log(`----- Profitable Arbitrage Opportunity Detected - Making actual trades on ${data.buyExchangeName} and ${data.sellExchangeName}`);
 			}
-			console.log(`${moment().format("H:mm:ss.SS")} ${data.marketName} : Qty: ${data.actualTradeableQty}  Cost:  ${data.expectedBuyCost}, Fees: ${data.expectedBuyFee + data.expectedSellFee}, Expected Profit: ${data.expectedProfit}`);
+			console.log(`${moment().format("H:mm:ss.SS")} Recommendation Made: ${data.marketName} : Qty: ${data.actualTradeableQty}  Cost:  ${data.expectedBuyCost}, Fees: ${data.expectedBuyFee + data.expectedSellFee}, Expected Profit: ${data.expectedProfit}`);
 			console.log(`Buy for: ${data.buyPrice} on ${data.buyExchangeName}`);
 			console.log(`Sell at: ${data.sellPrice} on ${data.sellExchangeName}`);
 			console.log("-----");
@@ -73,7 +74,7 @@ function makeRecommendation(market) {
 
 exports.buy = (rec) => {
 	buy(rec);
-} 
+}
 
 function buy(rec) {
 	var ex = getExchange(rec.buyExchangeName);
@@ -82,7 +83,7 @@ function buy(rec) {
 
 exports.sell = (rec) => {
 	sell(rec);
-} 
+}
 
 function sell(rec) {
 	var ex = getExchange(rec.sellExchangeName);

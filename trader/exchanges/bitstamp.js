@@ -92,7 +92,7 @@ function getReconciledTrades(recommendations) {
 			key: key,
 			signature: signature,
 			nonce: nonce,
-			limit: 500
+			limit: 200
 		};
 		makeRequest('post', host, path, querystring.stringify(data), doReconcile, 0, '');
 	} else {

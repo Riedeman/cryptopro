@@ -33,6 +33,7 @@ exports.resolve = () => {
 		},
 	}).then((recommendations) => {
 		recommendations.map((rec) => {
+			//TODO: Deal with partial fills
 			var endResult = 'A1';
 			var buyMaker = rec.buyResultFee / rec.expectedBuyFee < .66 ? true : false;
 			var sellMaker = rec.sellResultFee / rec.expectedSellFee < .66 ? true : false;
