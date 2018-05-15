@@ -48,7 +48,7 @@ npm install
 
 Once the database is configured you should familiarize yourself with the tables and make sure to set the configuration values to the appropriate settings for your level of trading (see below). The tables (and corresponding JavaScript objects) are:
 
-- **Markets**: BTC-USD, ETH-USD, XRP-USD, etc.
+- **Markets**: BTC-USD, ETH-USD, LTC-USD, XRP-USD, etc.
 - **Exchanges**: Bitstamp, GDAX, Gemini, Kraken
 - **Products**: What a market is called on an exchange (e.g., BTC-USD on Bitstamp is "btcusd", but on Kraken, it's "XXBTZUSD") and the fees associated with it. Current bid/ask prices are updated frequently in this table.
 - **Balances**: Stores available balances and trade quantity adjustment settings
@@ -104,7 +104,7 @@ To run: `node makeMoney`
 
 ### Level 2 - Pseudo Mode
 
-Pseudo mode allows you to see what would happen if you were making trades using the balances available in your real accounts. Like Spectator mode, it checks regularly for the latest prices. But by using the available balances retrieved using your Pseudo Mode API Keys, it determines the appropriate trade quantity you would be able to make.  It updates the Balances table with the appropriate assumed amounts, including subtracting the expected fees. Unlike real trades, pseudo-trades have a guaranteed 100% success rate.
+Pseudo mode allows you to see what would happen if you were making trades using the balances available in your real accounts. Like Spectator mode, it checks regularly for the latest prices. But by using the available balances retrieved using your Pseudo Mode API Keys, it determines the appropriate trade quantity you would be able to make.  It updates the Balances table with the appropriate assumed amounts, including subtracting the expected fees. Unlike real trades, pseudo-trades have a guaranteed 100% success rate (because they're not real trades).
 
 Configuration settings: Authentication info added to config file, makeRealTrades = false
 To run: `node makeMoney`
@@ -142,11 +142,15 @@ Cryptopro uses asynchronous processes and stored procedures together to react as
 
 This can also happen if errors are received while placing orders. Errors do happen. Especially at peak times. Especially with less reliable exchanges (*ahem...Kraken*). This can also cause a trade to have one leg unresolved.
 
+See the All Possible Outcomes.pdf file for an explanation of how balances are affected by unresolved trades.
+
 To help rectify this situation, you can resubmit either the buy or sell side of a trade by changing the Recommendations.endResult to 'rebuy' or 'resell' and setting the configuration file setting of enableReorders to true. The order should be picked up and resubmitted to the exchange the next time makeMoney.js checks for reorders. A record of the original transactionID will be stored in the Reorders table for archival purposes.
 
 How you handle failures and unfilled trades will significantly affect your overall profitability. Cryptopro assumes orders get placed successfully (or are reopened in the event of an error) and stay open indefinitely until they are filled. Lengthy open order times will reduce the available tradable quantity and lower the overall number of trades it can make while the order remains open. It's also a bummer. If the market never returns to the missed price point, you will need an alternate risk-management strategy or plan (insurance, futures, knocking on wood, etc.) to account for the effects to your overall profitability.
 
-One strategy is to cancel, then reopen trades as the market moves away from then back toward unfilled price points in order to have more available quantity to work with in the interim. This can be done manually (balances will be updated every 5 minutes or on a restart to reflect any changes). Or, if you're feeling especially clever, you can fork this project and extend the reorder.js reorder function to match your strategy to the latest prices in the Products table. Again, all of this is at your own risk.
+One strategy is to cancel, then reopen trades as the market moves away from then back toward unfilled price points in order to have more available quantity to work with in the interim. This can be done manually (balances will be updated every 5 minutes or on a restart to reflect any changes). Or, if you're feeling especially clever, you can fork this project and extend the reorder.js reorder function to match your trading strategy to the latest prices in the Products table. 
+
+Again, all of this is at your own risk.
 
 ### TLDR;
 If you would like to use Cryptopro but are not comfortable with the technical requirements and would prefer a hosted or turn-key solution, please contact Arbos for pricing.

@@ -561,7 +561,9 @@ UNION select 'USD Available', sum(available) from Balances where currency = 'USD
 UNION select 'Liquidation Value', (select 
 sum(b.available * p.bid) as value from Balances b 
 join Products p on b.exchangeID = p.exchangeID AND b.currency = LEFT(p.marketName,3) AND RIGHT(p.marketName,3) = 'USD')
-+(select sum(available) from Balances where currency = 'USD') as totalValue;
++(select sum(available) from Balances where currency = 'USD')
++(select COALESCE(sum(expectedBuyCost), 0) from Recommendations where sellResultStatus is null) 
++(select COALESCE(sum(expectedBuyCost), 0) from Recommendations where buyResultStatus is null);
 
 end ;;
 DELIMITER ;
