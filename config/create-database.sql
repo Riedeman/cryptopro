@@ -559,11 +559,18 @@ UNION select 'Actual Fees', sum(buyResultFee + sellResultFee) from Recommendatio
 UNION select 'Actual Profit', sum(actualProfit) from Recommendations where buyResultStatus = 'filled' and sellResultStatus = 'filled'
 UNION select 'USD Available', sum(available) from Balances where currency = 'USD'
 UNION select 'Liquidation Value', (select 
-sum(b.available * p.bid) as value from Balances b 
-join Products p on b.exchangeID = p.exchangeID AND b.currency = LEFT(p.marketName,3) AND RIGHT(p.marketName,3) = 'USD')
-+(select sum(available) from Balances where currency = 'USD')
-+(select COALESCE(sum(expectedBuyCost), 0) from Recommendations where sellResultStatus is null) 
-+(select COALESCE(sum(expectedBuyCost), 0) from Recommendations where buyResultStatus is null);
+  sum((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) 
+  +(select sum(available) from Balances where currency = 'USD')
+  +(coalesce(buyOpen.expectedBuyCost, 0))
+  as value 
+  from Balances b 
+  join Products p on b.exchangeID = p.exchangeID 
+    AND b.currency = LEFT(p.marketName,3) 
+    AND RIGHT(p.marketName,3) = 'USD'
+  left join Recommendations sellOpen on b.currency = LEFT(sellOpen.marketName,3)
+    AND b.exchangeID = sellOpen.sellExchangeID AND sellOpen.sellResultStatus is null 
+  left join Recommendations buyOpen on b.currency = LEFT(buyOpen.marketName,3)
+    AND b.exchangeID = buyOpen.buyExchangeID AND buyOpen.buyResultStatus is null);
 
 end ;;
 DELIMITER ;
