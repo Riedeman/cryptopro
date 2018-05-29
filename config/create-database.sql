@@ -561,7 +561,7 @@ UNION select 'USD Available', sum(available) from Balances where currency = 'USD
 UNION select 'Liquidation Value', (select 
   sum((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) 
   +(select sum(available) from Balances where currency = 'USD')
-  +(coalesce(buyOpen.expectedBuyCost, 0))
+  +(coalesce(sum(buyOpen.expectedBuyCost), 0))
   as value 
   from Balances b 
   join Products p on b.exchangeID = p.exchangeID 
