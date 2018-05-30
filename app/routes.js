@@ -1,3 +1,4 @@
+var User = require('./models/sequelize.js').User;
 var
 	RecommendationController = require('../app/models/recommendation/recommendation.controller'),
 	BalanceController = require('../app/models/balance/balance.controller'),
@@ -15,12 +16,24 @@ module.exports = (app) => {
 		marketRoutes = express.Router(),
 		potentialRoutes = express.Router(),
 		recommendationRoutes = express.Router(),
-		userRoutes = express.Router()
-
+		userRoutes = express.Router();
 	apiRoutes.use((req, res, next) => {
 		console.log('Gets called every time');
-		//TODO: Validate API-Key
-		next(); // make sure we go to the next routes and don't stop here
+		User.findOne({
+			where: {
+				'apiKey': req.header("x-api-key")
+			}
+		}).then((user, err) => {
+			if (err) {
+				console.log("ERROR", err);
+			} else {
+				if (user && user.id) {
+					next(); // If validated, go to the next routes and don't stop here
+				} else {
+					console.log("No soup for you!", req.header("x-api-key"));
+				}
+			}
+		});
 	});
 
 	// Recommendation Routes
