@@ -2,21 +2,17 @@ var User = require('./models/sequelize.js').User;
 var
 	RecommendationController = require('../app/models/recommendation/recommendation.controller'),
 	BalanceController = require('../app/models/balance/balance.controller'),
-	ExchangeController = require('../app/models/exchange/exchange.controller'),
-	MarketController = require('../app/models/market/market.controller'),
 	PotentialController = require('../app/models/potential/potential.controller'),
-	UserController = require('../app/models/user/user.controller'),
+	ProductController = require('../app/models/product/product.controller'),
 	express = require('express');
 
 module.exports = (app) => {
 	var apiRoutes = express.Router(),
 		balanceRoutes = express.Router(),
-		exchangeoutes = express.Router(),
 		kpiRoutes = express.Router(),
-		marketRoutes = express.Router(),
 		potentialRoutes = express.Router(),
-		recommendationRoutes = express.Router(),
-		userRoutes = express.Router();
+		productRoutes = express.Router(),
+		recommendationRoutes = express.Router();
 	apiRoutes.use((req, res, next) => {
 		console.log('Gets called every time');
 		User.findOne({
@@ -55,6 +51,10 @@ module.exports = (app) => {
 	// KPI Route
 	apiRoutes.use('/kpis', kpiRoutes);
 	kpiRoutes.get('/', BalanceController.kpis);
+
+	// Product Routes
+	apiRoutes.use('/products', productRoutes);
+	productRoutes.get('/', ProductController.getAll);
 
 	app.use('/api', apiRoutes); // all routes will be prefixed with /api
 }
