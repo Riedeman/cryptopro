@@ -22,11 +22,17 @@ module.exports = (app) => {
 		}).then((user, err) => {
 			if (err) {
 				console.log("ERROR", err);
+				res.status(401).json({
+					error: 'Invalid api-key.'
+				});
 			} else {
 				if (user && user.id) {
 					next(); // If validated, go to the next routes and don't stop here
 				} else {
 					console.log("No soup for you!", req.header("x-api-key"));
+					res.status(401).json({
+						error: 'Incorrect!.'
+					});
 				}
 			}
 		});
