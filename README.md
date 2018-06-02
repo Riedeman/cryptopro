@@ -119,6 +119,7 @@ To run: `node makeMoney`
 ### Level 4 - OCD: Obsessive Cryptocurrency Disorder (expert level only) (also, not free: $19.99) 
 
 Android: https://play.google.com/store/apps/details?id=com.cleversystems.arbos.cryptocd
+
 iOS: https://itunes.apple.com/us/app/crypt-ocd/id1393754470
 
 Since querying database tables and watching a script do nothing most of the time isn't very exciting, there's now a way you can play along at home. It makes your data available via an API that you can connect directly to using the Crypt-OCD app. Regardless of the Level (1-3) of arbitrage you're doing, you can follow along in the app so you'll never have to wonder what's going on.
@@ -131,7 +132,7 @@ The OCD level works by making the data in your Cryptopro database available via 
 4.  Purchase ($19.99), install, and run the Crypt-OCD app
 	- Android: https://play.google.com/store/apps/details?id=com.cleversystems.arbos.cryptocd
 	- iOS: https://itunes.apple.com/us/app/crypt-ocd/id1393754470
-5.  In the Settings screen under Connect to My Data, enter the URL for your API and the API key you created in the User record in Step 1
+5.  In the Settings screen, enter the URL for your API and the API key you created in the User record in Step 1
 6.  Use the app to watch your balances, trades, and all the action whenever you want
 
 ### Testing the API:
