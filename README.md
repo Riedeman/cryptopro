@@ -117,16 +117,20 @@ Configuration settings: Authentication info added to config file, makeRealTrades
 To run: `node makeMoney`
 
 ### Level 4 - OCD: Obsessive Cryptocurrency Disorder (expert level only) (also, not free: $19.99) 
-*(coming soon)*
 
-Since querying database tables and watching a script do nothing most of the time isn't very exciting, ~~there's now~~ there will soon be a way you can play along at home. It makes your data available via an API that you can connect directly to using the Cryptopro app. Regardless of the Level (1-3) of arbitrage you're doing, you can follow along in the app so you'll never have to wonder what's going on.
+Android: https://play.google.com/store/apps/details?id=com.cleversystems.arbos.cryptocd
+iOS: https://itunes.apple.com/us/app/crypt-ocd/id1393754470
 
-The OCD level works by making the data in your Cryptopro database available via an API which the Cryptopro app can then connect to and display. **Do not do this** unless you understand and can manage the consequences of hosting an API which will show your available balances and trades. If you're still not dissuaded, here are the steps to connect your data to the Cryptopro app:
+Since querying database tables and watching a script do nothing most of the time isn't very exciting, there's now a way you can play along at home. It makes your data available via an API that you can connect directly to using the Crypt-OCD app. Regardless of the Level (1-3) of arbitrage you're doing, you can follow along in the app so you'll never have to wonder what's going on.
+
+The OCD level works by making the data in your Cryptopro database available via an API which the Crypt-OCD app can then connect to and display. **Do not do this** unless you understand and can manage the consequences of hosting an API which will show your available balances and trades. If you're still not dissuaded, here are the steps to connect your data to the Crypt-OCD app:
 
 1.  Add a user record to the Users table and give it an API key (roll your own key generator)
 2.  Run `node showMeTheMoney` to make your data available via a REST API
 3.  Make your REST API available via HTTP/HTTPS so your device can access it
-4.  Purchase ($19.99), install, and run the Cryptopro app
+4.  Purchase ($19.99), install, and run the Crypt-OCD app
+	- Android: https://play.google.com/store/apps/details?id=com.cleversystems.arbos.cryptocd
+	- iOS: https://itunes.apple.com/us/app/crypt-ocd/id1393754470
 5.  In the Settings screen under Connect to My Data, enter the URL for your API and the API key you created in the User record in Step 1
 6.  Use the app to watch your balances, trades, and all the action whenever you want
 

@@ -37,8 +37,8 @@ exports.kpis = (req, res) => {
 		UNION select 'Expected Profit', sum(expectedProfit) from Recommendations
 		UNION select 'Actual Fees', sum(buyResultFee + sellResultFee) from Recommendations
 		UNION select 'Actual Profit', sum(actualProfit) from Recommendations
-		UNION select 'Fees BPS', sum(buyResultFee + sellResultFee)/sum(expectedBuyCost + expectedSellCost) * 10000 from Recommendations 
-		UNION select 'Profit BPS', sum(actualProfit)/sum(expectedBuyCost + expectedSellCost) * 10000 from Recommendations
+		UNION select 'Fees bps', sum(buyResultFee + sellResultFee)/sum(expectedBuyCost + expectedSellCost) * 10000 from Recommendations 
+		UNION select 'Profit bps', sum(actualProfit)/sum(expectedBuyCost + expectedSellCost) * 10000 from Recommendations
 		UNION select 'USD Available', sum(available) from Balances where currency = 'USD'
 		UNION select 'Liquidation Value', (select 
 		sum((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) 
