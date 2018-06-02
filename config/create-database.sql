@@ -555,8 +555,10 @@ UNION select 'Total Volume', sum(expectedBuyCost)+sum(expectedSellCost) from Rec
 UNION select 'Trades Missed', count(*) from Potentials
 UNION select 'Expected Fees', sum(expectedBuyFee + expectedSellFee) from Recommendations
 UNION select 'Expected Profit', sum(expectedProfit) from Recommendations
-UNION select 'Actual Fees', sum(buyResultFee + sellResultFee) from Recommendations where buyResultStatus = 'filled' and sellResultStatus = 'filled'
-UNION select 'Actual Profit', sum(actualProfit) from Recommendations where buyResultStatus = 'filled' and sellResultStatus = 'filled'
+UNION select 'Actual Fees', sum(buyResultFee + sellResultFee) from Recommendations
+UNION select 'Actual Profit', sum(actualProfit) from Recommendations
+UNION select 'Fees BPS', sum(buyResultFee + sellResultFee)/sum(expectedBuyCost + expectedSellCost) * 10000 from Recommendations 
+UNION select 'Profit BPS', sum(actualProfit)/sum(expectedBuyCost + expectedSellCost) * 10000 from Recommendations
 UNION select 'USD Available', sum(available) from Balances where currency = 'USD'
 UNION select 'Liquidation Value', (select 
   sum((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) 
