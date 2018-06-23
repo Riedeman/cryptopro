@@ -552,7 +552,7 @@ UNION select '30-day Volume', sum(expectedBuyCost)+sum(expectedSellCost) from Re
 UNION select 'Avg. Trade', sum(expectedBuyCost)/count(*) from Recommendations
 UNION select 'Avg. Profit', sum(actualProfit)/count(*) from Recommendations
 UNION select 'Total Volume', sum(expectedBuyCost)+sum(expectedSellCost) from Recommendations
-UNION select 'Trades Missed', count(*) from Potentials
+UNION select 'Trades Missed', max(id) from Potentials
 UNION select 'Expected Fees', sum(expectedBuyFee + expectedSellFee) from Recommendations
 UNION select 'Expected Profit', sum(expectedProfit) from Recommendations
 UNION select 'Actual Fees', sum(buyResultFee + sellResultFee) from Recommendations
