@@ -53,7 +53,7 @@ Once the database is configured you should familiarize yourself with the tables 
 - **Products**: What a market is called on an exchange (e.g., BTC-USD on Bitstamp is "btcusd", but on Kraken, it's "XXBTZUSD") and the fees associated with it. Current bid/ask prices are updated frequently in this table.
 - **Balances**: Stores available balances and trade quantity adjustment settings
 - **Potentials**: Potential arbitrage opportunities captured, not accounting for user's available balances
-- **Recommendations**: (Level 2+) If a profitable trade is found the details are captured in the Recommendations table. (Level 3+) Transactions details for buy/sell orders and order reconciliation data are also captured.
+- **Recommendations**: (Level 2+) If a profitable trade is found the details are captured in the Recommendations table. (Level 3+) Transaction details for buy/sell orders and order reconciliation data are also captured.
 - **Users**: (Level 4) User information to allow you to follow your own trading using the mobile app.
 
 ### Configure Settings

@@ -39,6 +39,7 @@ function rebuy() {
 					});
 				} else {
 					console.log(`Not enough ${rec.buyCurrency} on ${rec.buyExchangeName} to reopen ${rec.id} `);
+					console.log(`Available ${balance.available - balance.reserve} needs ${rec.expectedBuyCost + rec.expectedBuyFee}`);
 				}
 			});
 		});
@@ -74,9 +75,9 @@ function resell() {
 					});
 				} else {
 					console.log(`Not enough ${rec.sellCurrency} on ${rec.sellExchangeName} to reopen ${rec.id} `);
+					console.log(`Available: ${balance.available} reserve: ${balance.reserve} = ${ balance.available - balance.reserve } needs: ${rec.actualTradeableQty}`);
 				}
 			});
 		});
 	});
 }
-

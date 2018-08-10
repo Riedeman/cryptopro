@@ -10,7 +10,7 @@ const secret = config.secret;
 const passphrase = config.passphrase;
 const orderBookDepth = config.orderBookDepth || 0; //NOT SUPPORTED FOR GDAX
 
-const apiURI = 'https://api.gdax.com';
+const apiURI = 'https://api.pro.coinbase.com';
 var exchange = new Exchanges.gdax({
 	key: key,
 	secret: secret,
@@ -18,7 +18,7 @@ var exchange = new Exchanges.gdax({
 });
 
 exports.updatePrice = ((product) => {
-	return axios.get(`https://api.gdax.com/products/${product.ticker}/book`).then((res) => {
+	return axios.get(`${apiURI}/products/${product.ticker}/book`).then((res) => {
 		var data = res.data;
 		product.bid = +data.bids[orderBookDepth][0];
 		product.bidQty = +data.bids[orderBookDepth][1];
@@ -35,6 +35,7 @@ exports.updatePrice = ((product) => {
 
 exports.buy = ((recID, ticker, qty, price) => {
 	exchange.buy(ticker, qty, price).then((res) => {
+			console.log("GDAX buy ", res);
 			AccountInfo.saveResultTransaction(recID, 'buy', res.txid);
 		})
 		.catch((err) => {
@@ -46,6 +47,7 @@ exports.buy = ((recID, ticker, qty, price) => {
 
 exports.sell = ((recID, ticker, qty, price) => {
 	exchange.sell(ticker, qty, price).then((res) => {
+			console.log("GDAX sell ", res);
 			AccountInfo.saveResultTransaction(recID, 'sell', res.txid);
 		})
 		.catch((err) => {
