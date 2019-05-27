@@ -8,13 +8,17 @@ const CoinbasePro = require('coinbase-pro');
 const publicClient = new CoinbasePro.PublicClient();
 const apiURI = 'https://api.pro.coinbase.com';
 // const sandboxURI = 'https://api-public.sandbox.pro.coinbase.com';
+const isConfigured = (config.key && config.key.length > 10);
 
-const authedClient = new CoinbasePro.AuthenticatedClient(
-	config.key,
-	config.secret,
-	config.passphrase,
-	apiURI
-);
+var authedClient;
+if (isConfigured) {
+	authedClient = new CoinbasePro.AuthenticatedClient(
+		config.key,
+		config.secret,
+		config.passphrase,
+		apiURI
+	);
+}
 
 exports.updatePrice = ((product) => {
 	return publicClient.getProductOrderBook(product.ticker, {
@@ -35,10 +39,10 @@ exports.updatePrice = ((product) => {
 
 exports.buy = ((recID, ticker, qty, price) => {
 	authedClient.buy({
-		price: price,
-		size: qty, 
-		product_id: ticker,
-	}).then((res) => {
+			price: price,
+			size: qty,
+			product_id: ticker,
+		}).then((res) => {
 			console.log("Coinbase buy ", res);
 			AccountInfo.saveResultTransaction(recID, 'buy', res.txid);
 			exports.updateBalances();
@@ -52,10 +56,10 @@ exports.buy = ((recID, ticker, qty, price) => {
 
 exports.sell = ((recID, ticker, qty, price) => {
 	authedClient.sell({
-		price: price,
-		size: qty, 
-		product_id: ticker,
-	}).then((res) => {
+			price: price,
+			size: qty,
+			product_id: ticker,
+		}).then((res) => {
 			console.log("Coinbase sell ", res);
 			AccountInfo.saveResultTransaction(recID, 'sell', res.txid);
 			exports.updateBalances();
@@ -68,28 +72,30 @@ exports.sell = ((recID, ticker, qty, price) => {
 });
 
 exports.updateBalances = (() => {
-	authedClient.getAccounts((err, response, data) => {
-		if (err) {
-			console.log(`Error getting balance from GDAX`, err);
-		} else {
-			// console.log("Result data: ", data);
-			let balances = _.reduce(data, (result, acct) => {
-				result[acct.currency] = {
-					balance: parseFloat(acct.balance),
-					available: parseFloat(acct.available),
-					pending: parseFloat(acct.hold)
-				}
-				return result
-			}, {});
-			var exchangeName = 'GDAX';
-			AccountInfo.saveBalance(exchangeName, "BCH", balances.BCH ? balances.BCH.available : 0);
-			AccountInfo.saveBalance(exchangeName, "BTC", balances.BTC ? balances.BTC.available : 0);
-			AccountInfo.saveBalance(exchangeName, "ETH", balances.ETH ? balances.ETH.available : 0);
-			AccountInfo.saveBalance(exchangeName, "LTC", balances.LTC ? balances.LTC.available : 0);
-			AccountInfo.saveBalance(exchangeName, "USD", balances.USD ? balances.USD.available : 0);
-			AccountInfo.saveBalance(exchangeName, "XRP", balances.XRP ? balances.XRP.available : 0);
-		}
-	});
+	if (isConfigured) {
+		authedClient.getAccounts((err, response, data) => {
+			if (err) {
+				console.log(`Error getting balance from GDAX`, err);
+			} else {
+				// console.log("Result data: ", data);
+				let balances = _.reduce(data, (result, acct) => {
+					result[acct.currency] = {
+						balance: parseFloat(acct.balance),
+						available: parseFloat(acct.available),
+						pending: parseFloat(acct.hold)
+					}
+					return result
+				}, {});
+				var exchangeName = 'GDAX';
+				AccountInfo.saveBalance(exchangeName, "BCH", balances.BCH ? balances.BCH.available : 0);
+				AccountInfo.saveBalance(exchangeName, "BTC", balances.BTC ? balances.BTC.available : 0);
+				AccountInfo.saveBalance(exchangeName, "ETH", balances.ETH ? balances.ETH.available : 0);
+				AccountInfo.saveBalance(exchangeName, "LTC", balances.LTC ? balances.LTC.available : 0);
+				AccountInfo.saveBalance(exchangeName, "USD", balances.USD ? balances.USD.available : 0);
+				AccountInfo.saveBalance(exchangeName, "XRP", balances.XRP ? balances.XRP.available : 0);
+			}
+		});
+	}
 });
 
 exports.reconcile = (type) => {
