@@ -53,6 +53,8 @@ module.exports = (app) => {
 	// Balance Routes
 	apiRoutes.use('/balances', balanceRoutes);
 	balanceRoutes.get('/', BalanceController.getAll);
+	balanceRoutes.get('/currency', BalanceController.byCurrency);
+	balanceRoutes.get('/exchange', BalanceController.byExchange);
 
 	// KPI Route
 	apiRoutes.use('/kpis', kpiRoutes);

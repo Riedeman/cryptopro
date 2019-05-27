@@ -10,6 +10,50 @@ exports.getAll = (req, res) => {
 	});
 }
 
+// Liquidation value by currency
+exports.byCurrency = (req, res) => {
+	var query = `SELECT b.currency,
+			SUM(b.available + coalesce(sellOpen.actualTradeableQty, 0)) as totalAvailable,
+			SUM(((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) + coalesce(buyOpen.expectedBuyCost, 0)) as liquidationValue
+			FROM Balances b 
+			JOIN Products p on b.exchangeID = p.exchangeID 
+				AND b.currency = LEFT(p.marketName,3) 
+				AND RIGHT(p.marketName,3) = 'USD'
+			LEFT JOIN Recommendations sellOpen on b.currency = LEFT(sellOpen.marketName,3)
+				AND b.exchangeID = sellOpen.sellExchangeID AND sellOpen.sellResultStatus is null 
+			LEFT JOIN Recommendations buyOpen on b.currency = LEFT(buyOpen.marketName,3)
+				AND b.exchangeID = buyOpen.buyExchangeID AND buyOpen.buyResultStatus is null
+			WHERE ((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) + coalesce(buyOpen.expectedBuyCost, 0) > 0
+		GROUP BY b.currency
+		UNION
+		SELECT b.currency, SUM(b.available), SUM(b.available)
+		FROM Balances b where currency = 'USD' AND available > 0
+				GROUP BY b.currency
+		ORDER BY 1,2`;
+	Balance.sequelize.query(query).spread((results) => {
+		res.json(results);
+	});
+}
+
+exports.byExchange = (req, res) => {
+	var query = `SELECT b.exchangeName,
+		SUM(((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) + coalesce(buyOpen.expectedBuyCost, 0)) +
+		(SELECT usd.available from Balances usd where currency = 'USD' AND usd.exchangeName = b.exchangeName) as liquidationValue
+		FROM Balances b 
+		JOIN Products p on b.exchangeID = p.exchangeID 
+			AND b.currency = LEFT(p.marketName,3) 
+			AND RIGHT(p.marketName,3) = 'USD'
+		LEFT JOIN Recommendations sellOpen on b.currency = LEFT(sellOpen.marketName,3)
+			AND b.exchangeID = sellOpen.sellExchangeID AND sellOpen.sellResultStatus is null 
+		LEFT JOIN Recommendations buyOpen on b.currency = LEFT(buyOpen.marketName,3)
+			AND b.exchangeID = buyOpen.buyExchangeID AND buyOpen.buyResultStatus is null
+		WHERE ((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) + coalesce(buyOpen.expectedBuyCost, 0) > 0
+		GROUP BY b.exchangeName`
+	Balance.sequelize.query(query).spread((results) => {
+		res.json(results);
+	});
+}
+
 exports.kpis = (req, res) => {
 	//TODO: Fix this and create_database sql with one from server.
 	var query = `select 'Trades' as KPI, count(*) as Amount from Recommendations

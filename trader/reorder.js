@@ -18,7 +18,7 @@ function rebuy() {
 	}).then((recommendations) => {
 		recommendations.forEach((rec) => {
 			AccountInfo.sleep(100);
-			Balance.find({
+			Balance.findOne({
 				where: {
 					currency: rec.buyCurrency,
 					exchangeID: rec.buyExchangeID
@@ -54,7 +54,7 @@ function resell() {
 	}).then((recommendations) => {
 		recommendations.forEach((rec) => {
 			AccountInfo.sleep(100);
-			Balance.find({
+			Balance.findOne({
 				where: {
 					currency: rec.sellCurrency,
 					exchangeID: rec.sellExchangeID
