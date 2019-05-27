@@ -13,7 +13,7 @@ exports.reorder = () => {
 function rebuy() {
 	Recommendation.findAll({
 		where: {
-			endResult: 'rebuy'
+			buyResultStatus: 'rebuy'
 		}
 	}).then((recommendations) => {
 		recommendations.forEach((rec) => {
@@ -49,7 +49,7 @@ function rebuy() {
 function resell() {
 	Recommendation.findAll({
 		where: {
-			endResult: 'resell'
+			sellResultStatus: 'resell'
 		}
 	}).then((recommendations) => {
 		recommendations.forEach((rec) => {

@@ -1,8 +1,7 @@
 var Balance = require('../app/models/sequelize.js').Balance;
 var Recommendation = require('../app/models/sequelize.js').Recommendation;
 var Bitstamp = require('./exchanges/bitstamp.js');
-var GDAX = require('./exchanges/gdax.js');
-var Gemini = require('./exchanges/gemini.js');
+var Coinbase = require('./exchanges/coinbase.js');
 var Kraken = require('./exchanges/kraken.js');
 
 exports.updateAllBalances = () => {
@@ -10,17 +9,15 @@ exports.updateAllBalances = () => {
 	Balance.sequelize.query(`update Balances set available = 0`).then(() => {
 		Bitstamp.updateBalancesAndFees();
 		Kraken.updateBalances();
-		GDAX.updateBalances();
-		Gemini.updateBalances();
+		Coinbase.updateBalances();
 	});
 }
 
 exports.reconcile = (type) => {
 	console.log(`Reconciling open ${type} orders`);
 	Bitstamp.reconcile(type);
-	GDAX.reconcile(type);
 	Kraken.reconcile(type);
-	Gemini.reconcile(type);
+	Coinbase.reconcile(type);
 }
 
 exports.resolve = () => {
@@ -33,7 +30,6 @@ exports.resolve = () => {
 		},
 	}).then((recommendations) => {
 		recommendations.map((rec) => {
-			//TODO: Deal with partial fills
 			var endResult = 'A1';
 			var buyMaker = rec.buyResultFee / rec.expectedBuyFee < .66 ? true : false;
 			var sellMaker = rec.sellResultFee / rec.expectedSellFee < .66 ? true : false;

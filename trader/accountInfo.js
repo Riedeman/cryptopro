@@ -33,7 +33,9 @@ exports.saveFee = (exchangeName, marketName, fee) => {
 }
 
 exports.saveResultTransaction = (recID, type, transactionID) => {
-	var query = `update Recommendations set ${type=='buy'?'buyTransactionID':'sellTransactionID'} = '${transactionID}' where id = ${recID}`;
+	var query = `update Recommendations set ${type == 'buy' ? 'buyTransactionID' : 'sellTransactionID'} = '${transactionID}'`;
+	query += (transactionID.substring(0, 5) == 'ERROR' && config.resubmitFailures) ? `, ${type == 'buy' ? "buyResultStatus='rebuy'" : "sellResultStatus='resell'"}` : '';
+	query += ` where id = ${recID}`;
 	console.log(`${moment().format("H:mm:ss.SS")}`, query);
 	return Recommendation.sequelize.query(query);
 }

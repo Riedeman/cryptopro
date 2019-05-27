@@ -54,6 +54,11 @@ function makeTrade(type, recID, ticker, qty, price) {
 	makeRequest('post', host, path, querystring.stringify(data), saveResult, recID, type);
 }
 
+function saveResult(data, recID, type) {
+	AccountInfo.saveResultTransaction(recID, type, data.id);
+	exports.updateBalancesAndFees();
+}
+
 exports.updateBalancesAndFees = (() => {
 	if (!key || key == "<API Key>") {
 		console.log('No Bitstamp API Key. Ignoring balances.');
@@ -71,79 +76,6 @@ exports.updateBalancesAndFees = (() => {
 		makeRequest('post', host, path, querystring.stringify(data), saveBalances, 0, '');
 	}
 });
-
-exports.reconcile = (type) => {
-	console.log(`Reconciling Bitstamp ${type}`);
-	if (type == "buy") {
-		reconcileBuys();
-	} else {
-		reconcileSells();
-	}
-}
-
-function getReconciledTrades(recommendations) {
-	if (recommendations && recommendations.length > 0) {
-		var nonce = AccountInfo.generateNonce();
-		var message = nonce + custID + key;
-		var hash = crypto.createHmac('sha256', secret).update(message).digest('hex');
-		var signature = hash.toUpperCase();
-		var path = `/api/v2/user_transactions/`;
-		var data = {
-			key: key,
-			signature: signature,
-			nonce: nonce,
-			limit: 200
-		};
-		makeRequest('post', host, path, querystring.stringify(data), doReconcile, 0, '');
-	} else {
-		AccountInfo.log("No Bitstamp orders waiting for reconcile.");
-	}
-}
-
-function reconcileBuys() {
-	Recommendation.findAll({
-		where: {
-			endResult: null,
-			buyExchangeName: "Bitstamp",
-		},
-	}).then((recommendations) => {
-		getReconciledTrades(recommendations)
-	});
-}
-
-function reconcileSells() {
-	Recommendation.findAll({
-		where: {
-			endResult: null,
-			sellExchangeName: "Bitstamp"
-		},
-	}).then((recommendations) => {
-		getReconciledTrades(recommendations)
-	});
-}
-
-function doReconcile(data, recID, type) {
-	//Bitstamp uses additive fills, so we have to wipe data first and then add as we go.  Annoying. 
-	var exchangeName = 'Bitstamp';
-	var query = `update Recommendations set buyResultCost = 0, buyResultFee = 0, buyResultStatus = null where endResult is NULL AND buyExchangeName='${exchangeName}'`;
-	Recommendation.sequelize.query(query);
-	query = `update Recommendations set sellResultCost = 0, sellResultFee = 0, sellResultStatus = null where endResult is NULL AND sellExchangeName='${exchangeName}'`;
-	Recommendation.sequelize.query(query);
-	// console.log("Data cleared...updating with...", data);
-	data.map((order) => {
-		if (order.order_id && order.order_id != 'undefined') {
-			console.log(`Reconciling order ${exchangeName} ${order.order_id} cost ${Math.abs(order.usd)}, fee ${order.fee}`);
-			query = `update Recommendations set buyResultStatus = 'filled', buyResultCost= buyResultCost + ${Math.abs(order.usd)}, buyResultFee = buyResultFee + ${order.fee} where endResult is NULL AND buyExchangeName = '${exchangeName}' and buyTransactionID = '${order.order_id}'`;
-			Recommendation.sequelize.query(query);
-			query = `update Recommendations set sellResultStatus = 'filled', sellResultCost=sellResultCost + ${Math.abs(order.usd)}, sellResultFee = sellResultFee + ${order.fee} where endResult is NULL AND sellExchangeName = '${exchangeName}' and sellTransactionID = '${order.order_id}'`;
-			Recommendation.sequelize.query(query);
-		}
-	});
-}
-
-function saveResult(data, recID, type) {
-	AccountInfo.saveResultTransaction(recID, type, data.id);
-}
 
 function saveBalances(data, recID, type) {
 	var exchangeName = "Bitstamp";
@@ -164,6 +96,77 @@ function saveBalances(data, recID, type) {
 	AccountInfo.saveFee(exchangeName, "XRP-USD", data.xrpusd_fee / 100);
 	AccountInfo.saveFee(exchangeName, "BTC-XRP", data.xrpbtc_fee / 100);
 	return;
+}
+
+exports.reconcile = (type) => {
+	console.log(`Reconciling Bitstamp ${type}`);
+	if (type == "buy") {
+		reconcileBuys();
+	} else {
+		reconcileSells();
+	}
+}
+
+function reconcileBuys() {
+	Recommendation.findAll({
+		where: {
+			buyResultStatus: null,
+			buyExchangeName: "Bitstamp",
+		},
+	}).then((recommendations) => {
+		for (var i = 0; i < recommendations.length; i++) {
+			reconcileTrade(recommendations[i], 'buy');
+			AccountInfo.sleep(200);
+		}
+	});
+}
+
+function reconcileSells() {
+	Recommendation.findAll({
+		where: {
+			sellResultStatus: null,
+			sellExchangeName: "Bitstamp"
+		},
+	}).then((recommendations) => {
+		for (var i = 0; i < recommendations.length; i++) {
+			reconcileTrade(recommendations[i], 'sell');
+			AccountInfo.sleep(200);
+		}
+	});
+}
+
+function reconcileTrade(trade, type) {
+	var nonce = AccountInfo.generateNonce();
+	var message = nonce + custID + key;
+	var hash = crypto.createHmac('sha256', secret).update(message).digest('hex');
+	var signature = hash.toUpperCase();
+	var path = `/api/v2/order_status/`;
+	var data = {
+		key: key,
+		signature: signature,
+		nonce: nonce,
+		id: type == 'buy' ? trade.buyTransactionID : trade.sellTransactionID
+	};
+	makeRequest('post', host, path, querystring.stringify(data), doReconcile, trade.id, type);
+}
+
+function doReconcile(data, recID, type) {
+	console.log("Reconciling order", recID);
+	if (data.status == 'Finished') {
+		var cost = 0;
+		var fee = 0;
+		let query = '';
+		for (var i = 0; i < data.transactions.length; i++) {
+			cost += +data.transactions[i].usd;
+			fee += +data.transactions[i].fee;
+		}
+		if (type == 'buy') {			
+			query = `update Recommendations set buyResultStatus = 'filled', buyResultCost= ${cost}, buyResultFee = ${fee} where endResult is NULL AND id = ${recID}`;
+		} else {
+			query = `update Recommendations set sellResultStatus = 'filled', sellResultCost= ${cost}, sellResultFee = ${fee} where endResult is NULL AND id = ${recID}`;
+		}
+		Recommendation.sequelize.query(query);
+	}
 }
 
 function makeRequest(method, host, path, data, callback, recID, type) {

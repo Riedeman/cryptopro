@@ -12,7 +12,7 @@ const secret = config.secret;
 const orderBookDepth = config.orderBookDepth || 0;
 
 exports.updatePrice = ((product) => {
-	return axios.get(`https://api.kraken.com/0/public/Depth?count=2&pair=${product.ticker}`).then((res) => {
+	return axios.get(`https://api.kraken.com/0/public/Depth?count=${orderBookDepth + 1}&pair=${product.ticker}`).then((res) => {
 		var data = res.data.result[product.ticker];
 		product.bid = +data.bids[orderBookDepth][0];
 		product.bidQty = +data.bids[orderBookDepth][1];
@@ -42,6 +42,7 @@ exports.buy = ((recID, ticker, qty, price) => {
 			AccountInfo.zeroBalances('Kraken');
 		} else {
 			AccountInfo.saveResultTransaction(recID, 'buy', res.result.txid);
+			exports.updateBalances();
 		}
 	});
 });
@@ -61,6 +62,7 @@ exports.sell = ((recID, ticker, qty, price) => {
 			AccountInfo.zeroBalances('Kraken');
 		} else {
 			AccountInfo.saveResultTransaction(recID, 'sell', res.result.txid);
+			exports.updateBalances();
 		}
 	});
 });

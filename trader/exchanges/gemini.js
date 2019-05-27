@@ -3,7 +3,6 @@ var moment = require('moment');
 var axios = require("axios");
 var AccountInfo = require('../accountInfo.js');
 var Product = require('../../app/models/sequelize.js').Product;
-var GeminiAPI = require('gemini-api').default;
 var Recommendation = require('../../app/models/sequelize.js').Recommendation;
 
 const config = require('../../config/config.json')["Gemini"];

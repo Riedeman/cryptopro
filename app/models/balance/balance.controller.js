@@ -4,22 +4,9 @@ var moment = require('moment');
 
 //Balances
 exports.getAll = (req, res) => {
-	Balance.findAll({
-		where: {
-			available: {
-				$gt: 0
-			}
-		},
-		order: [
-			['exchangeName', 'ASC', 'currency', 'ASC']
-		],
-
-	}).then((balances, err) => {
-		if (err) {
-			res.send(err);
-		} else {
-			res.json(balances);
-		}
+	var query = `select * from Balances where available > 0 order by exchangeName, currency`;
+	Balance.sequelize.query(query).spread((results) => {
+		res.json(results);
 	});
 }
 

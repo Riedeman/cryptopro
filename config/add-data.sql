@@ -19,21 +19,22 @@ INSERT INTO `Markets` (id, name, baseCurrency, marketCurrency, tradeActive, crea
 
 INSERT INTO `Products` (id, marketId, marketName, exchangeID, exchangeName, ticker, baseFee, createdAt, updatedAt) VALUES 
 (1,1,'BTC-USD',1,'Bitstamp','btcusd',0.0025,now(),now()),
-(2,1,'BTC-USD',2,'GDAX','BTC-USD',0.003,now(),now()),
+(2,1,'BTC-USD',2,'GDAX','BTC-USD',0.0025,now(),now()),
 (3,1,'BTC-USD',3,'Gemini','btcusd',0.01,now(),now()),
 (4,1,'BTC-USD',4,'Kraken','XXBTZUSD',0.0026,now(),now()),
 (5,2,'ETH-USD',1,'Bitstamp','ethusd',0.0025,now(),now()),
-(6,2,'ETH-USD',2,'GDAX','ETH-USD',0.003,now(),now()),
+(6,2,'ETH-USD',2,'GDAX','ETH-USD',0.0025,now(),now()),
 (7,2,'ETH-USD',3,'Gemini','ethusd',0.01,now(),now()),
 (8,2,'ETH-USD',4,'Kraken','XETHZUSD',0.0026,now(),now()),
 (9,3,'LTC-USD',1,'Bitstamp','ltcusd',0.0025,now(),now()),
-(10,3,'LTC-USD',2,'GDAX','LTC-USD',0.003,now(),now()),
+(10,3,'LTC-USD',2,'GDAX','LTC-USD',0.0025,now(),now()),
 (11,3,'LTC-USD',4,'Kraken','XLTCZUSD',0.0026,now(),now()),
 (12,4,'BCH-USD',1,'Bitstamp','bchusd',0.0025,now(),now()),
-(13,4,'BCH-USD',2,'GDAX','BCH-USD',0.003,now(),now()),
+(13,4,'BCH-USD',2,'GDAX','BCH-USD',0.0025,now(),now()),
 (14,4,'BCH-USD',4,'Kraken','BCHUSD',0.0026,now(),now()),
 (15,5,'XRP-USD',1,'Bitstamp','xrpusd',0.0025,now(),now()),
-(16,5,'XRP-USD',4,'Kraken','XXRPZUSD',0.0026,now(),now());
+(16,5,'XRP-USD',4,'Kraken','XXRPZUSD',0.0026,now(),now()),
+(17,5,'XRP-USD',2,'GDAX','XRP-USD',0.0025,now(),now());
 
 INSERT INTO `Balances` (id, exchangeID, exchangeName, currency, available, reserve, exposureRatio, liquidityRatio, createdAt, updatedAt) VALUES 
 (1,1,'Bitstamp','BCH',0,0.0075,1,1,now(),now()),
@@ -55,5 +56,6 @@ INSERT INTO `Balances` (id, exchangeID, exchangeName, currency, available, reser
 (17,4,'Kraken','ETH',0,0.01,1,1,now(),now()),
 (18,4,'Kraken','LTC',0,0.01,1,1,now(),now()),
 (19,4,'Kraken','USD',0,15,1,1,now(),now()),
-(20,4,'Kraken','XRP',0,10,1,1,now(),now());
+(20,4,'Kraken','XRP',0,10,1,1,now(),now()),
+(21,2,'GDAX','XRP',0,10,1,1,now(),now());
 

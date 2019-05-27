@@ -36,7 +36,7 @@ function runTicker() {
 		if (loop % 100 == 0) { // Update balances regularly to catch any activity
 			Balances.updateAllBalances();
 		}
-		if (config.enableReorders && loop % 300 == 3) { // Reopen any flagged orders
+		if (config.enableReorders && loop % 100 == 3) { // Reopen any flagged orders
 			Reorder.reorder();
 		}
 		if (loop % 300 == 5) { // Reconcile buys occasionally

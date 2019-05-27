@@ -20,7 +20,7 @@ exports.getAll = (req, res) => {
 		order: [
 			['id', 'DESC']
 		],
-		limit: 200
+		limit: 100
 	}).then((potentials, err) => {
 		if (err) {
 			res.send(err);

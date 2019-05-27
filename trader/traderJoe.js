@@ -4,10 +4,11 @@ var Balance = require('../app/models/sequelize.js').Balance;
 var Market = require('../app/models/sequelize.js').Market;
 var Product = require('../app/models/sequelize.js').Product;
 var Recommendation = require('../app/models/sequelize.js').Recommendation;
+
 var Bitstamp = require('./exchanges/bitstamp.js');
-var GDAX = require('./exchanges/gdax.js');
-var Gemini = require('./exchanges/gemini.js');
+var Coinbase = require('./exchanges/coinbase.js');
 var Kraken = require('./exchanges/kraken.js');
+
 const config = require('../config/config.json');
 
 exports.updateAll = () => {
@@ -43,15 +44,19 @@ function makeRecommendation(market) {
 	Sequelize.sequelize.query(`CALL make_recommendation(${market.id});`).spread((data) => {
 		if (data) {
 			if (config.makeRealTrades) {
-				sell(data);
 				buy(data);
+				sell(data);
+				console.log("-----");
 				console.log(`----- Profitable Arbitrage Opportunity Detected - Making actual trades on ${data.buyExchangeName} and ${data.sellExchangeName}`);
+				console.log("-----");
+			} else {
+				console.log("-----Fake trade, updading presumed balances -----");
+				updateAssumedBalances(data); // Fake the trade balance changes, including fees
 			}
 			console.log(`${moment().format("H:mm:ss.SS")} Recommendation Made: ${data.marketName} : Qty: ${data.actualTradeableQty}  Cost:  ${data.expectedBuyCost}, Fees: ${data.expectedBuyFee + data.expectedSellFee}, Expected Profit: ${data.expectedProfit}`);
 			console.log(`Buy for: ${data.buyPrice} on ${data.buyExchangeName}`);
 			console.log(`Sell at: ${data.sellPrice} on ${data.sellExchangeName}`);
 			console.log("-----");
-			updateAssumedBalances(data); //Reconciling is too slow if it's action time. Added risk, but makes multi-exchange loops more lucrative
 			return data;
 		} else {
 			// No profitable trade available. Capture any missed opportunity for data mining.
@@ -93,13 +98,11 @@ function sell(rec) {
 function getExchange(name) {
 	switch (name) {
 		case 'GDAX':
-			return GDAX;
+			return Coinbase;
 		case 'Kraken':
 			return Kraken;
 		case 'Bitstamp':
 			return Bitstamp;
-		case 'Gemini':
-			return Gemini;
 	}
 }
 
