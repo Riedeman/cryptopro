@@ -44,7 +44,7 @@ exports.buy = ((recID, ticker, qty, price) => {
 			product_id: ticker,
 		}).then((res) => {
 			console.log("Coinbase buy ", res);
-			AccountInfo.saveResultTransaction(recID, 'buy', res.txid);
+			AccountInfo.saveResultTransaction(recID, 'buy', res.id);
 			exports.updateBalances();
 		})
 		.catch((err) => {
@@ -61,7 +61,7 @@ exports.sell = ((recID, ticker, qty, price) => {
 			product_id: ticker,
 		}).then((res) => {
 			console.log("Coinbase sell ", res);
-			AccountInfo.saveResultTransaction(recID, 'sell', res.txid);
+			AccountInfo.saveResultTransaction(recID, 'sell', res.id);
 			exports.updateBalances();
 		})
 		.catch((err) => {
