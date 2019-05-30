@@ -38,36 +38,44 @@ exports.updatePrice = ((product) => {
 });
 
 exports.buy = ((recID, ticker, qty, price) => {
+	if (ticker == "XRP-USD") {
+		qty = Math.round(qty);
+	}
 	authedClient.buy({
-			price: price,
-			size: qty,
-			product_id: ticker,
-		}).then((res) => {
-			console.log("Coinbase buy ", res);
-			AccountInfo.saveResultTransaction(recID, 'buy', res.id);
-			exports.updateBalances();
-		})
+		price: price,
+		size: qty,
+		product_id: ticker,
+	}).then((res) => {
+		console.log("Coinbase buy ", res);
+		AccountInfo.zeroBalances("GDAX");
+		AccountInfo.saveResultTransaction(recID, 'buy', res.id);
+		exports.updateBalances();
+	})
 		.catch((err) => {
 			console.log("ERR buying: ", err);
-			AccountInfo.saveResultTransaction(recID, 'buy', `ERROR: ${err}`);
 			AccountInfo.zeroBalances("GDAX");
+			AccountInfo.saveResultTransaction(recID, 'buy', `ERROR: ${err}`);
 		});
 });
 
 exports.sell = ((recID, ticker, qty, price) => {
+	if (ticker == "XRP-USD") {
+		qty = Math.round(qty);
+	}
 	authedClient.sell({
-			price: price,
-			size: qty,
-			product_id: ticker,
-		}).then((res) => {
-			console.log("Coinbase sell ", res);
-			AccountInfo.saveResultTransaction(recID, 'sell', res.id);
-			exports.updateBalances();
-		})
+		price: price,
+		size: qty,
+		product_id: ticker,
+	}).then((res) => {
+		console.log("Coinbase sell ", res);
+		AccountInfo.zeroBalances("GDAX");
+		AccountInfo.saveResultTransaction(recID, 'sell', res.id);
+		exports.updateBalances();
+	})
 		.catch((err) => {
 			console.log("ERR selling: ", err);
-			AccountInfo.saveResultTransaction(recID, 'sell', `ERROR: ${err}`);
 			AccountInfo.zeroBalances("GDAX");
+			AccountInfo.saveResultTransaction(recID, 'sell', `ERROR: ${err}`);
 		});
 });
 
