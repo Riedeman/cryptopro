@@ -47,15 +47,14 @@ exports.buy = ((recID, ticker, qty, price) => {
 		product_id: ticker,
 	}).then((res) => {
 		console.log("Coinbase buy ", res);
-		AccountInfo.zeroBalances("GDAX");
 		AccountInfo.saveResultTransaction(recID, 'buy', res.id);
 		exports.updateBalances();
 	})
 		.catch((err) => {
 			console.log("ERR buying: ", err);
-			AccountInfo.zeroBalances("GDAX");
 			AccountInfo.saveResultTransaction(recID, 'buy', `ERROR: ${err}`);
 		});
+	AccountInfo.zeroBalances("GDAX");
 });
 
 exports.sell = ((recID, ticker, qty, price) => {
@@ -68,15 +67,14 @@ exports.sell = ((recID, ticker, qty, price) => {
 		product_id: ticker,
 	}).then((res) => {
 		console.log("Coinbase sell ", res);
-		AccountInfo.zeroBalances("GDAX");
 		AccountInfo.saveResultTransaction(recID, 'sell', res.id);
 		exports.updateBalances();
 	})
 		.catch((err) => {
 			console.log("ERR selling: ", err);
-			AccountInfo.zeroBalances("GDAX");
 			AccountInfo.saveResultTransaction(recID, 'sell', `ERROR: ${err}`);
 		});
+	AccountInfo.zeroBalances("GDAX");
 });
 
 exports.updateBalances = (() => {

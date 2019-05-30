@@ -38,15 +38,14 @@ exports.buy = ((recID, ticker, qty, price) => {
 	}, (err, res) => {
 		if (err) {
 			console.log("ERR buying: ", err);
-			AccountInfo.zeroBalances('Kraken');
 			AccountInfo.saveResultTransaction(recID, 'buy', `ERROR: ${err}`);
 		} else {
-			console.log("Kranen buy: ", res);
-			AccountInfo.zeroBalances('Kraken');
+			console.log("Kraken buy: ", res);
 			AccountInfo.saveResultTransaction(recID, 'buy', res.result.txid);
 			exports.updateBalances();
 		}
 	});
+	AccountInfo.zeroBalances('Kraken');
 });
 
 exports.sell = ((recID, ticker, qty, price) => {
@@ -60,16 +59,14 @@ exports.sell = ((recID, ticker, qty, price) => {
 	}, (err, res) => {
 		if (err) {
 			console.log("ERR selling: ", err);
-			AccountInfo.zeroBalances('Kraken');
 			AccountInfo.saveResultTransaction(recID, 'sell', `ERROR: ${err}`);
-			AccountInfo.zeroBalances('Kraken');
 		} else {
 			console.log("Kranen sell: ", res);
-			AccountInfo.zeroBalances('Kraken');
 			AccountInfo.saveResultTransaction(recID, 'sell', res.result.txid);
 			exports.updateBalances();
 		}
 	});
+	AccountInfo.zeroBalances('Kraken');
 });
 
 exports.reconcile = (type) => {

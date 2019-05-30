@@ -52,11 +52,11 @@ function makeTrade(type, recID, ticker, qty, price) {
 		price: price
 	};
 	makeRequest('post', host, path, querystring.stringify(data), saveResult, recID, type);
+	AccountInfo.zeroBalances("Bitstamp");
 }
 
 function saveResult(data, recID, type) {
 	console.log("Bistamp order:", data);
-	AccountInfo.zeroBalances("Bitstamp");
 	AccountInfo.saveResultTransaction(recID, type, data.id);
 	exports.updateBalancesAndFees();
 }
