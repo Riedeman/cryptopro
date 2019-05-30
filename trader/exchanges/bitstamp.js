@@ -55,6 +55,7 @@ function makeTrade(type, recID, ticker, qty, price) {
 }
 
 function saveResult(data, recID, type) {
+	console.log("Bistamp order:", data);
 	AccountInfo.zeroBalances("Bitstamp");
 	AccountInfo.saveResultTransaction(recID, type, data.id);
 	exports.updateBalancesAndFees();

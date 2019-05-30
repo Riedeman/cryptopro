@@ -41,6 +41,7 @@ exports.buy = ((recID, ticker, qty, price) => {
 			AccountInfo.zeroBalances('Kraken');
 			AccountInfo.saveResultTransaction(recID, 'buy', `ERROR: ${err}`);
 		} else {
+			console.log("Kranen buy: ", res);
 			AccountInfo.zeroBalances('Kraken');
 			AccountInfo.saveResultTransaction(recID, 'buy', res.result.txid);
 			exports.updateBalances();
@@ -63,6 +64,7 @@ exports.sell = ((recID, ticker, qty, price) => {
 			AccountInfo.saveResultTransaction(recID, 'sell', `ERROR: ${err}`);
 			AccountInfo.zeroBalances('Kraken');
 		} else {
+			console.log("Kranen sell: ", res);
 			AccountInfo.zeroBalances('Kraken');
 			AccountInfo.saveResultTransaction(recID, 'sell', res.result.txid);
 			exports.updateBalances();
