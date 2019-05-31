@@ -20,9 +20,9 @@ exports.byCurrency = (req, res) => {
 				AND b.currency = LEFT(p.marketName,3) 
 				AND RIGHT(p.marketName,3) = 'USD'
 			LEFT JOIN Recommendations sellOpen on b.currency = LEFT(sellOpen.marketName,3)
-				AND b.exchangeID = sellOpen.sellExchangeID AND sellOpen.sellResultStatus is null 
+				AND b.exchangeID = sellOpen.sellExchangeID AND sellOpen.sellResultStatus is null AND sellOpen.sellTransactionID is not null
 			LEFT JOIN Recommendations buyOpen on b.currency = LEFT(buyOpen.marketName,3)
-				AND b.exchangeID = buyOpen.buyExchangeID AND buyOpen.buyResultStatus is null
+				AND b.exchangeID = buyOpen.buyExchangeID AND buyOpen.buyResultStatus is null AND buyOpen.buyTransactionID is not null
 			WHERE ((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) + coalesce(buyOpen.expectedBuyCost, 0) > 0
 		GROUP BY b.currency
 		UNION
@@ -44,9 +44,9 @@ exports.byExchange = (req, res) => {
 			AND b.currency = LEFT(p.marketName,3) 
 			AND RIGHT(p.marketName,3) = 'USD'
 		LEFT JOIN Recommendations sellOpen on b.currency = LEFT(sellOpen.marketName,3)
-			AND b.exchangeID = sellOpen.sellExchangeID AND sellOpen.sellResultStatus is null 
+			AND b.exchangeID = sellOpen.sellExchangeID AND sellOpen.sellResultStatus is null AND sellOpen.sellTransactionID is not null
 		LEFT JOIN Recommendations buyOpen on b.currency = LEFT(buyOpen.marketName,3)
-			AND b.exchangeID = buyOpen.buyExchangeID AND buyOpen.buyResultStatus is null
+			AND b.exchangeID = buyOpen.buyExchangeID AND buyOpen.buyResultStatus is null AND buyOpen.buyTransactionID is not null
 		WHERE ((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) + coalesce(buyOpen.expectedBuyCost, 0) > 0
 		GROUP BY b.exchangeName`
 	Balance.sequelize.query(query).spread((results) => {
@@ -81,9 +81,9 @@ exports.kpis = (req, res) => {
 			AND b.currency = LEFT(p.marketName,3) 
 			AND RIGHT(p.marketName,3) = 'USD'
 		left join Recommendations sellOpen on b.currency = LEFT(sellOpen.marketName,3)
-			AND b.exchangeID = sellOpen.sellExchangeID AND sellOpen.sellResultStatus is null 
+			AND b.exchangeID = sellOpen.sellExchangeID AND sellOpen.sellResultStatus is null AND sellOpen.sellTransactionID is not null
 		left join Recommendations buyOpen on b.currency = LEFT(buyOpen.marketName,3)
-			AND b.exchangeID = buyOpen.buyExchangeID AND buyOpen.buyResultStatus is null);`;
+			AND b.exchangeID = buyOpen.buyExchangeID AND buyOpen.buyResultStatus is null AND buyOpen.buyTransactionID is not null);`;
 	// console.log("------------query is: ", query);
 	Balance.sequelize.query(query).spread((results) => {
 		res.json(results);
