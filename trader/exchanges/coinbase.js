@@ -38,9 +38,6 @@ exports.updatePrice = ((product) => {
 });
 
 exports.buy = ((recID, ticker, qty, price) => {
-	if (ticker == "XRP-USD") {
-		qty = Math.round(qty);
-	}
 	authedClient.buy({
 		price: price,
 		size: qty,
@@ -58,9 +55,6 @@ exports.buy = ((recID, ticker, qty, price) => {
 });
 
 exports.sell = ((recID, ticker, qty, price) => {
-	if (ticker == "XRP-USD") {
-		qty = Math.round(qty);
-	}
 	authedClient.sell({
 		price: price,
 		size: qty,

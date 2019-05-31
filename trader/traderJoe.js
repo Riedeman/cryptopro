@@ -44,6 +44,10 @@ function makeRecommendation(market) {
 	Sequelize.sequelize.query(`CALL make_recommendation(${market.id});`).spread((data) => {
 		if (data) {
 			if (config.makeRealTrades) {
+				if (data.marketName == "XRP-USD") {
+					// Coinbase limits to min qty of 1
+					data.actualTradeableQty = Math.round(data.actualTradeableQty);
+				}
 				buy(data);
 				sell(data);
 				console.log("-----");
