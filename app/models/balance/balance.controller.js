@@ -14,7 +14,7 @@ exports.getAll = (req, res) => {
 exports.byCurrency = (req, res) => {
 	var query = `SELECT b.currency,
 			SUM(b.available + coalesce(sellOpen.actualTradeableQty, 0)) as totalAvailable,
-			SUM(((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) + coalesce(buyOpen.expectedBuyCost, 0)) as liquidationValue
+			SUM((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) as liquidationValue
 			FROM Balances b 
 			JOIN Products p on b.exchangeID = p.exchangeID 
 				AND b.currency = LEFT(p.marketName,3) 
@@ -23,10 +23,12 @@ exports.byCurrency = (req, res) => {
 				AND b.exchangeID = sellOpen.sellExchangeID AND sellOpen.sellResultStatus is null AND sellOpen.sellTransactionID is not null
 			LEFT JOIN Recommendations buyOpen on b.currency = LEFT(buyOpen.marketName,3)
 				AND b.exchangeID = buyOpen.buyExchangeID AND buyOpen.buyResultStatus is null AND buyOpen.buyTransactionID is not null
-			WHERE ((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) + coalesce(buyOpen.expectedBuyCost, 0) > 0
+			WHERE ((b.available + coalesce(sellOpen.actualTradeableQty, 0)) * p.bid) > 0
 		GROUP BY b.currency
 		UNION
-		SELECT b.currency, SUM(b.available), SUM(b.available)
+		SELECT b.currency, 
+		SUM(b.available) + (SELECT SUM(expectedBuyCost) from Recommendations where buyResultStatus is null AND buyTransactionID is not null),
+		SUM(b.available) + (SELECT SUM(expectedBuyCost) from Recommendations where buyResultStatus is null AND buyTransactionID is not null)
 		FROM Balances b where currency = 'USD' AND available > 0
 				GROUP BY b.currency
 		ORDER BY 1,2`;
