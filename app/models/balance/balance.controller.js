@@ -27,8 +27,8 @@ exports.byCurrency = (req, res) => {
 		GROUP BY b.currency
 		UNION
 		SELECT b.currency, 
-		SUM(b.available) + (SELECT SUM(expectedBuyCost) from Recommendations where buyResultStatus is null AND buyTransactionID is not null),
-		SUM(b.available) + (SELECT SUM(expectedBuyCost) from Recommendations where buyResultStatus is null AND buyTransactionID is not null)
+		SUM(b.available) + COALESCE((SELECT SUM(expectedBuyCost) from Recommendations where 1=2 AND buyResultStatus is null AND buyTransactionID is not null), 0),
+		SUM(b.available) + COALESCE((SELECT SUM(expectedBuyCost) from Recommendations where 1=2 AND buyResultStatus is null AND buyTransactionID is not null), 0)
 		FROM Balances b where currency = 'USD' AND available > 0
 				GROUP BY b.currency
 		ORDER BY 1,2`;
