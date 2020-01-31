@@ -31,24 +31,27 @@ var ticker = setInterval(runTicker, 3000);
 function runTicker() {
 	loop++;
 	console.log("-----");
-	console.log(`${moment().format("H:mm:ss.SS")} =>  Price check ${loop.toString().padEnd(loop.toString().length + loop%10, '.')}`);
+	console.log(`${moment().format("H:mm:ss.SS")} =>  Price check ${loop.toString().padEnd(loop.toString().length + loop % 10, '.')}`);
+	const resetEvery = 100;
 	if (config.makeRealTrades) {
-		if (loop % 100 == 0) { // Update balances regularly to catch any activity
+		if (loop % resetEvery == 0) { // Update balances regularly to catch any activity
 			Balances.updateAllBalances();
 		}
-		if (config.enableReorders && loop % 100 == 3) { // Reopen any flagged orders
+		if (config.enableReorders && loop % resetEvery == 2) { // Reopen any flagged orders
 			Reorder.reorder();
 		}
-		if (loop % 300 == 5) { // Reconcile buys occasionally
+		if (loop % resetEvery == 3) { // Reconcile buys occasionally
 			Balances.reconcile("buy");
 		}
-		if (loop % 300 == 7) { // Reconcile sells after that to avoid nonce errors
+		if (loop % resetEvery == 4) { // Reconcile sells after that to avoid nonce errors
 			Balances.reconcile("sell");
 		}
-		if (loop % 300 == 10) { // Resolve the overall trades some time after that.
+		if (loop % resetEvery == 6) { // Resolve the overall trades some time after that.
 			Balances.resolve();
 		}
+		if (loop % resetEvery >= 5) { // Check for profitable trades
+			var foundTrade = TraderJoe.updateAll();
+			console.log(".....");
+		}
 	}
-	console.log("-----");
-	var foundTrade = TraderJoe.updateAll();
 }
