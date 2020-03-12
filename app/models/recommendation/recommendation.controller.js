@@ -31,8 +31,7 @@ exports.getAll = (req, res) => {
 	Recommendation.findAll({
 		order: [
 			['id', 'DESC']
-		],
-		limit: 500
+		]
 	}).then((recommendations, err) => {
 		if (err) {
 			res.send(err);

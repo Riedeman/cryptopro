@@ -33,6 +33,9 @@ exports.saveFee = (exchangeName, marketName, fee) => {
 }
 
 exports.saveResultTransaction = (recID, type, transactionID) => {
+	if (!transactionID) {
+		transactionID = "ERROR...no transaction ID";
+	}
 	var query = `update Recommendations set ${type == 'buy' ? 'buyTransactionID' : 'sellTransactionID'} = '${transactionID}'`;
 	query += (transactionID.toString().substring(0, 5) == 'ERROR' && config.resubmitFailures) ? `, ${type == 'buy' ? "buyResultStatus='rebuy'" : "sellResultStatus='resell'"}` : '';
 	query += ` where id = ${recID}`;
