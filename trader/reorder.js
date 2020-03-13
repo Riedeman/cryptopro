@@ -24,7 +24,7 @@ function rebuy() {
 					exchangeID: rec.buyExchangeID
 				}
 			}).then((balance) => {
-				if (balance.available - balance.reserve >= rec.expectedBuyCost + rec.expectedBuyFee) {
+				if (((balance.available - balance.reserve) - (rec.expectedBuyCost + rec.expectedBuyFee)) > 0.00001) { // Deal with JavaScript floating point math
 					console.log(`Reopening ${rec.expectedBuyCost} ${rec.buyCurrency} buy order (${rec.id}) for ${rec.actualTradeableQty} ${rec.sellCurrency} @ ${rec.buyPrice} on ${rec.buyExchangeName}`);
 					Reorder.create({
 						recommendationID: rec.id,
